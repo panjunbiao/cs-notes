@@ -17,11 +17,12 @@ notes and the rendered pages stay decoupled.
 ├── _quarto.yml                 # Quarto website config
 ├── index.qmd                   # landing page
 ├── notes/                      # prose notes (.qmd, real LaTeX math)
-│   └── logistic-regression/    # one folder per topic module
+│   └── logistic-regression/    # one folder per module
 │       ├── index.qmd                     # module landing page (published, listed)
-│       ├── two-class-linear.qmd          # cleaned/corrected note (published, listed)
-│       ├── two-class-linear-source.qmd   # verbatim original (published, unlisted; linked from the note)
-│       └── two-class-linear-demo.ipynb   # from-scratch NumPy demo (published, listed)
+│       └── two-class-linear/             # one folder per topic (note + demo + source)
+│           ├── index.qmd                 # cleaned/corrected note (URL: .../two-class-linear/)
+│           ├── demo.ipynb                # from-scratch NumPy demo (nested under the note)
+│           └── source.qmd                # verbatim original (published, unlisted; linked from the note)
 ├── requirements.txt            # Python deps for the notebooks (numpy, matplotlib, jupyter)
 ├── notebooks/                  # (optional) general Jupyter notebooks, published via Quarto
 ├── assets/img/                 # figures / diagrams
@@ -36,9 +37,15 @@ Add a `.qmd` (prose) or `.ipynb` (notebook) file, then register it in the
 `website.sidebar` / `navbar` section of `_quarto.yml`. Push to `main` and CI
 renders and deploys automatically.
 
+**One folder per topic.** Each concept gets its own folder whose `index.qmd` is
+the note, with the demo notebook and any source transcription nested alongside
+(e.g. `two-class-linear/{index.qmd, demo.ipynb, source.qmd}`). New topics
+(multinomial, one-vs-rest, feature expansion, …) drop in as sibling folders with
+the same shape, and their pages nest under the note's URL.
+
 **Source vs. published.** Each polished note may keep a companion verbatim
-transcription of the original derivation as `<name>-source.qmd`. It *is*
-rendered (a faithful record with mistakes preserved), but it is kept **out of the
+transcription of the original derivation as `source.qmd`. It *is* rendered (a
+faithful record with mistakes preserved), but it is kept **out of the
 sidebar/navigation** — because the navbar, sidebar, and module listings are
 explicit, a page simply won't appear unless it's added. The cleaned note links to
 its source page directly, so it's reachable in one click but never clutters

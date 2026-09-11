@@ -3,8 +3,8 @@ title: "Logistic Regression"
 subtitle: "Classification with linear (and expanded) decision boundaries"
 listing:
   contents:
-    - two-class-linear.qmd
-    - two-class-linear-demo.ipynb
+    - two-class-linear/index.qmd
+    - two-class-linear/demo.ipynb
   type: table
   fields: [title, subtitle, date]
   sort: "date"
@@ -15,9 +15,9 @@ multi-class and non-linear extensions.
 
 ## Topics in this module
 
-- **[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd)** —
+- **[Two-Class, Two-Feature Linear Classifier](two-class-linear/index.qmd)** —
   deriving the loss, gradient, and gradient-descent update by hand.
-  ([from-scratch NumPy demo](two-class-linear-demo.ipynb))
+  ([from-scratch NumPy demo](two-class-linear/demo.ipynb))
 - *One-vs-Rest & One-vs-One multi-class classification* — planned.
 - *Multinomial (softmax) logistic regression* — planned.
 - *Feature expansion for non-linear decision boundaries* — planned.

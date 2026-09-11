@@ -8,7 +8,7 @@ search: false
 ::: {.callout-note appearance="simple"}
 This is a faithful, verbatim transcription of my **original handwritten
 derivation** — the *source* behind the cleaned note
-[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd). It
+[Two-Class, Two-Feature Linear Classifier](index.qmd). It
 intentionally preserves the original wording, notation, strike-throughs
 (`~~struck~~`), and any mistakes. `[Editorial notes in brackets]` mark spots
 where the handwriting is ambiguous or where a known slip occurs.
@@ -226,4 +226,4 @@ denoted $\eta$.]*
 ---
 
 ← Back to the cleaned note:
-[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd).
+[Two-Class, Two-Feature Linear Classifier](index.qmd).

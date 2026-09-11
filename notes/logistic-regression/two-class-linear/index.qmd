@@ -6,17 +6,17 @@ categories: [machine learning, logistic regression, classification, gradient des
 ---
 
 ::: {.callout-note appearance="simple"}
-This is the foundational case of the [Logistic Regression](index.qmd) module: a
+This is the foundational case of the [Logistic Regression](../index.qmd) module: a
 **binary** classifier with **two raw features** and a **linear** decision
 boundary. Later notes extend it to multi-class (one-vs-rest, one-vs-one,
 multinomial/softmax) and to non-linear boundaries via feature expansion.
 
 📄 Prefer the raw version? See my
-[original notes](two-class-linear-source.qmd) — a verbatim transcription of the
+[original notes](source.qmd) — a verbatim transcription of the
 handwritten derivation, mistakes and all.
 
 💻 Want to see it run? The
-[from-scratch NumPy demo](two-class-linear-demo.ipynb) implements every step
+[from-scratch NumPy demo](demo.ipynb) implements every step
 below — data, model, loss, gradient, and gradient descent — and visualizes the
 decision boundary.
 :::
