@@ -22,7 +22,7 @@ website:
         href: https://github.com/panjunbiao/cs-notes
         aria-label: GitHub
   sidebar:
-    style: floating
+    style: docked
     search: true
     contents:
       - section: "Machine Learning"
@@ -47,7 +47,7 @@ format:
       light: cosmo
       dark: darkly
     grid:
-      sidebar-width: 350px
+      sidebar-width: 320px
     toc: true
     toc-depth: 3
     number-sections: false
