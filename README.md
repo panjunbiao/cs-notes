@@ -18,9 +18,9 @@ notes and the rendered pages stay decoupled.
 ├── index.qmd                   # landing page
 ├── notes/                      # prose notes (.qmd, real LaTeX math)
 │   └── logistic-regression/    # one folder per topic module
-│       ├── index.qmd                    # module landing page (published)
-│       ├── two-class-linear.qmd         # cleaned/corrected note (published)
-│       └── _two-class-linear.source.md  # verbatim original source (committed, NOT published)
+│       ├── index.qmd                     # module landing page (published, listed)
+│       ├── two-class-linear.qmd          # cleaned/corrected note (published, listed)
+│       └── two-class-linear-source.qmd   # verbatim original (published, unlisted; linked from the note)
 ├── notebooks/                  # Jupyter notebooks (.ipynb), published via Quarto
 ├── assets/img/                 # figures / diagrams
 ├── _source/                    # private raw scans/originals (git-ignored, local only)
@@ -35,10 +35,12 @@ Add a `.qmd` (prose) or `.ipynb` (notebook) file, then register it in the
 renders and deploys automatically.
 
 **Source vs. published.** Each polished note may keep a companion verbatim
-transcription of the original derivation as `_<name>.source.md`. The leading `_`
-tells Quarto to skip it during rendering, so it is **versioned in git but never
-published** — a faithful record (mistakes preserved) that the cleaned `.qmd` is
-based on.
+transcription of the original derivation as `<name>-source.qmd`. It *is*
+rendered (a faithful record with mistakes preserved), but it is kept **out of the
+sidebar/navigation** — because the navbar, sidebar, and module listings are
+explicit, a page simply won't appear unless it's added. The cleaned note links to
+its source page directly, so it's reachable in one click but never clutters
+navigation.
 
 ## Local preview (optional)
 

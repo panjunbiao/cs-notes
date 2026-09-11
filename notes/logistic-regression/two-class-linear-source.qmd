@@ -1,15 +1,21 @@
-# Two-Class, Two-Feature Linear Classifier — original source transcription
+---
+title: "Two-Class, Two-Feature Linear Classifier — Original Notes"
+subtitle: "Verbatim transcription of my handwritten derivation (mistakes preserved)"
+date: 2026-09-11
+search: false
+---
 
-> **What this file is.** A faithful, verbatim transcription of my original
-> handwritten derivation, kept as the *source* of the polished note
-> [`two-class-linear.qmd`](two-class-linear.qmd). It intentionally preserves the
-> original wording, notation, strike-throughs (`~~struck~~`), and any mistakes.
-> `[Editorial notes in brackets]` mark spots where the handwriting is ambiguous
-> or where a known slip occurs.
->
-> This file is deliberately **not published** to the website (the leading `_`
-> tells Quarto to skip it). The corrected/cleaned version lives in
-> `two-class-linear.qmd`.
+::: {.callout-note appearance="simple"}
+This is a faithful, verbatim transcription of my **original handwritten
+derivation** — the *source* behind the cleaned note
+[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd). It
+intentionally preserves the original wording, notation, strike-throughs
+(`~~struck~~`), and any mistakes. `[Editorial notes in brackets]` mark spots
+where the handwriting is ambiguous or where a known slip occurs.
+
+This page is intentionally left out of the site navigation and is reachable only
+via the link from the cleaned note.
+:::
 
 ---
 
@@ -216,3 +222,8 @@ $$
 *[Editorial note: the $y$ in front of the sum is the learning rate (step size),
 written with a symbol that resembles the label $y$. In the cleaned note this is
 denoted $\eta$.]*
+
+---
+
+← Back to the cleaned note:
+[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd).
