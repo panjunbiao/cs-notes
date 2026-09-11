@@ -14,6 +14,11 @@ multinomial/softmax) and to non-linear boundaries via feature expansion.
 📄 Prefer the raw version? See my
 [original notes](two-class-linear-source.qmd) — a verbatim transcription of the
 handwritten derivation, mistakes and all.
+
+💻 Want to see it run? The
+[from-scratch NumPy demo](two-class-linear-demo.ipynb) implements every step
+below — data, model, loss, gradient, and gradient descent — and visualizes the
+decision boundary.
 :::
 
 ## Setup

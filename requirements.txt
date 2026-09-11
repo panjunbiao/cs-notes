@@ -1,0 +1,4 @@
+# Dependencies for executing/rendering the Jupyter notebooks locally and in CI.
+numpy
+matplotlib
+jupyter

@@ -26,13 +26,15 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      # Uncomment the two steps below once you add executable Jupyter notebooks.
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: "3.12"
-      # - name: Install notebook dependencies
-      #   run: pip install -r requirements.txt
+      # Jupyter is available so Quarto can render notebooks. Notebooks ship with
+      # embedded outputs (execute.enabled is false in their front matter), so CI
+      # does not re-run them — but the toolchain is present if you flip that on.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install notebook dependencies
+        run: pip install -r requirements.txt
 
       - name: Render site
         run: quarto render
