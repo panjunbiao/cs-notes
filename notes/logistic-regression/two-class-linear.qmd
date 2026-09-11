@@ -237,7 +237,7 @@ back to later.
 ## Acknowledgment
 
 These notes are based on my work for **24-887 — Machine Learning & Artificial
-Intelligence for Engineers**, taught by Dr. Levent Burak Kara as part of Carnegie
+Intelligence for Engineers**, taught by Professor Levent Burak Kara as part of Carnegie
 Mellon University's
 [AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
 graduate certificate. All credit for the course material and problem framing

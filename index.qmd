@@ -20,7 +20,7 @@ library) and to keep a searchable refresher for my future self.
 ## Credit
 
 Course material and problem framing are from CMU's **24-887 — Machine Learning &
-Artificial Intelligence for Engineers** (instructor: Dr. Levent Burak Kara), part
+Artificial Intelligence for Engineers** (instructor: Professor Levent Burak Kara), part
 of the [AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
 graduate certificate. These are my own study notes; any errors are mine.
 
