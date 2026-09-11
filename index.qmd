@@ -1,0 +1,24 @@
+---
+title: "CS Notes"
+subtitle: "Learning notes from CMU 24-887 — Machine Learning & AI for Engineers"
+---
+
+Welcome! This is my personal, evolving set of notes taken while working through
+Carnegie Mellon University's
+[AI Engineering Fundamentals graduate certificate](https://www.cmu.edu/online/ai-engineering-fundamentals),
+starting with course **24-887 — Machine Learning & AI for Engineers**.
+
+I write these notes mostly to understand things more deeply (e.g. deriving the
+gradient-descent update rules by hand, even though real projects would just use a
+library) and to keep a searchable refresher for my future self.
+
+## Notes
+
+- [Logistic Regression](notes/logistic-regression.qmd) — deriving the loss,
+  gradient, and gradient-descent update for a two-class, two-feature linear classifier.
+
+::: {.callout-note}
+These notes are the *source*. The site you're reading is rendered automatically
+from that source with [Quarto](https://quarto.org) and published to GitHub Pages
+via CI, so the notes and the rendered pages stay decoupled.
+:::

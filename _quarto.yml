@@ -1,0 +1,42 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "CS Notes"
+  description: "Personal notes from CMU 24-887 Machine Learning & AI for Engineers, and beyond."
+  site-url: "https://panjunbiao.github.io/cs-notes"
+  repo-url: "https://github.com/panjunbiao/cs-notes"
+  repo-actions: [source, edit, issue]
+  page-navigation: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: "Notes"
+        menu:
+          - href: notes/logistic-regression.qmd
+            text: Logistic Regression
+    right:
+      - icon: github
+        href: https://github.com/panjunbiao/cs-notes
+        aria-label: GitHub
+  sidebar:
+    style: floating
+    search: true
+    contents:
+      - section: "Machine Learning"
+        contents:
+          - notes/logistic-regression.qmd
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    html-math-method: mathjax
+    code-copy: true
+    code-overflow: wrap

@@ -1,0 +1,221 @@
+---
+title: "Logistic Regression"
+subtitle: "Deriving the loss, gradient, and gradient-descent update for a two-class, two-feature linear classifier"
+date: 2026-09-11
+categories: [machine learning, classification, gradient descent]
+---
+
+## Setup
+
+Suppose we need to learn a classifier with two raw features $x_1$ and $x_2$.
+There are two classes, $a$ and $b$. Plotting the training data suggests the two
+classes are (roughly) linearly separable:
+
+```
+x2
+│  a a a
+│   a a a  a
+│  a  a
+│  a        b
+│       b  b  b
+│    b  b  b  b
+│       b   b
+└───────────────── x1
+```
+
+Because a straight line separates the classes well, a **linear function of the
+raw features** is enough — we don't need feature expansion here. So the model has
+a weight vector
+
+$$
+\mathbf{w} = \begin{bmatrix} w_0 \\ w_1 \\ w_2 \end{bmatrix}.
+$$
+
+We build a feature matrix for the $n$ training points, with a leading column of
+$1$'s for the bias term $w_0$:
+
+$$
+X =
+\begin{bmatrix}
+1 & x_1^{(1)} & x_2^{(1)} \\
+1 & x_1^{(2)} & x_2^{(2)} \\
+1 & x_1^{(3)} & x_2^{(3)} \\
+\vdots & \vdots & \vdots \\
+1 & x_1^{(n)} & x_2^{(n)}
+\end{bmatrix},
+\qquad
+X\mathbf{w} = \hat{\mathbf{y}}.
+$$
+
+For a single sample it is convenient to write the linear score as
+
+$$
+h^{(i)} \;=\; \mathbf{x}^{(i)} \cdot \mathbf{w} \;=\; w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)}.
+$$
+
+## From linear score to probability: the sigmoid
+
+A linear score lives on $(-\infty, \infty)$, but we want a probability in
+$[0, 1]$. We pass the score through the **sigmoid** function:
+
+$$
+g(h) = \frac{1}{1 + e^{-h}}.
+$$
+
+We interpret $g(h^{(i)})$ as $P\big(y^{(i)} = 1 \mid \mathbf{w}\big)$, the
+probability that sample $i$ belongs to the positive class.
+
+::: {.callout-tip title="Useful identity"}
+The sigmoid has a very clean derivative, which is what makes the gradient tidy:
+
+$$
+g'(h) = g(h)\,\big(1 - g(h)\big).
+$$
+:::
+
+## Likelihood
+
+Assuming the training samples are independent, the likelihood (the joint
+probability of the observed labels) is the product over all samples:
+
+$$
+P = \prod_{i=1}^{n}
+\underbrace{P\big(y = 1 \mid \mathbf{w}\big)^{\,y^{(i)}}}_{\text{when } y^{(i)}=1}
+\cdot
+\underbrace{P\big(y = 0 \mid \mathbf{w}\big)^{\,(1 - y^{(i)})}}_{\text{when } y^{(i)}=0}.
+$$
+
+Substituting the sigmoid:
+
+$$
+P = \prod_{i=1}^{n}
+\left( \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)^{y^{(i)}}
+\cdot
+\left( 1 - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)^{(1 - y^{(i)})}.
+$$
+
+## Log-likelihood
+
+Taking logs turns the product into a sum (and is numerically nicer):
+
+$$
+\ln(P) = \sum_{i=1}^{n}
+\left[
+y^{(i)} \ln\!\big(g(h^{(i)})\big)
++ \big(1 - y^{(i)}\big) \ln\!\big(1 - g(h^{(i)})\big)
+\right].
+$$
+
+## Objective (loss) function
+
+We apply **maximum likelihood estimation**: maximizing $\ln(P)$ is the same as
+minimizing its negative. So we define the loss as the negative log-likelihood
+(the binary cross-entropy):
+
+$$
+L = -\ln(P).
+$$
+
+For gradient descent we need the gradient of $L$ with respect to the weights:
+
+$$
+\frac{\partial L}{\partial \mathbf{w}} =
+\begin{bmatrix}
+\dfrac{\partial L}{\partial w_0} \\[2ex]
+\dfrac{\partial L}{\partial w_1} \\[2ex]
+\dfrac{\partial L}{\partial w_2}
+\end{bmatrix}.
+$$
+
+## Worked example: $\partial L / \partial w_2$
+
+Let $g = g(h^{(i)})$ for brevity, and recall $\dfrac{\partial h^{(i)}}{\partial w_2} = x_2^{(i)}$.
+
+**Derivatives of the two log terms.** Using $g' = g(1-g)$ and the chain rule:
+
+$$
+\frac{\partial}{\partial w_2}\ln(g)
+= \frac{1}{g}\, g(1-g)\, x_2^{(i)}
+= (1 - g)\, x_2^{(i)},
+$$
+
+$$
+\frac{\partial}{\partial w_2}\ln(1 - g)
+= \frac{1}{1 - g}\,\big(-g(1-g)\big)\, x_2^{(i)}
+= -\,g\, x_2^{(i)}.
+$$
+
+**Assemble the gradient.** Since $L = -\ln(P)$,
+
+$$
+\frac{\partial L}{\partial w_2}
+= -\sum_{i=1}^{n}
+\Big[\, y^{(i)}(1 - g)\,x_2^{(i)} + \big(1 - y^{(i)}\big)\big(-g\big)\,x_2^{(i)} \,\Big].
+$$
+
+Expanding the bracket, the cross terms $y^{(i)} g\, x_2^{(i)}$ cancel:
+
+$$
+y^{(i)}(1-g)\,x_2^{(i)} - (1 - y^{(i)})\,g\,x_2^{(i)}
+= \Big[\, y^{(i)} - \underbrace{y^{(i)}g + y^{(i)}g}_{\text{cancels}} - g \,\Big] x_2^{(i)}
+= \big(y^{(i)} - g\big)\,x_2^{(i)}.
+$$
+
+Therefore
+
+$$
+\frac{\partial L}{\partial w_2}
+= -\sum_{i=1}^{n} \big(y^{(i)} - g\big)\, x_2^{(i)}
+= \sum_{i=1}^{n} \big(g(\mathbf{x}^{(i)} \cdot \mathbf{w}) - y^{(i)}\big)\, x_2^{(i)}.
+$$
+
+::: {.callout-note title="Same result the long way"}
+In the handwritten notes this is derived by fully expanding
+$g = \frac{1}{1 + e^{-h}}$ and cancelling the $e^{-h}$ factors step by step. The
+sigmoid-derivative identity $g' = g(1-g)$ used above is just a shortcut to the
+identical result.
+:::
+
+## Generalizing to every weight
+
+Nothing above was special to $w_2$ — for $w_1$ the feature is $x_1^{(i)}$, and for
+the bias $w_0$ the "feature" is the constant $1$. So for any weight $w_j$:
+
+$$
+\frac{\partial L}{\partial w_j}
+= \sum_{i=1}^{n} \big(g(\mathbf{x}^{(i)} \cdot \mathbf{w}) - y^{(i)}\big)\, x_j^{(i)}.
+$$
+
+Stacking these into a vector (with $\mathbf{x}^{(i)} = [\,1,\; x_1^{(i)},\; x_2^{(i)}\,]$) gives the compact form:
+
+$$
+\frac{\partial L}{\partial \mathbf{w}}
+= \sum_{i=1}^{n} \big(g(\mathbf{x}^{(i)} \cdot \mathbf{w}) - y^{(i)}\big)\, \mathbf{x}^{(i)}
+= X^{\top}\big(g(X\mathbf{w}) - \mathbf{y}\big).
+$$
+
+The gradient is simply the **prediction error** $(\hat{y} - y)$ weighted by the
+features — the same structural form as linear regression's gradient.
+
+## Gradient-descent update
+
+Finally we update $\mathbf{w}$ iteratively, stepping opposite the gradient with
+learning rate $\eta$:
+
+$$
+\mathbf{w}^{\text{new}} \;\leftarrow\; \mathbf{w}
+\;-\; \eta \sum_{i=1}^{n} \big(g(\mathbf{x}^{(i)} \cdot \mathbf{w}) - y^{(i)}\big)\, \mathbf{x}^{(i)}.
+$$
+
+Repeat until convergence.
+
+::: {.callout-note title="Why derive this by hand"}
+In practice you'd reach for a library (`scikit-learn`, etc.) rather than coding
+this loop. Working through the derivation is purely to build intuition for
+*why* the update rule looks the way it does — and to have a refresher to come
+back to later.
+:::
+
+---
+
+*Transcribed from my handwritten notes (`_source/LogisticRegression.pdf`).*
