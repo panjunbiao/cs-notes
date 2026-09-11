@@ -1,9 +1,16 @@
 ---
-title: "Logistic Regression"
-subtitle: "Deriving the loss, gradient, and gradient-descent update for a two-class, two-feature linear classifier"
+title: "Two-Class, Two-Feature Linear Classifier"
+subtitle: "Deriving the loss, gradient, and gradient-descent update by hand"
 date: 2026-09-11
-categories: [machine learning, classification, gradient descent]
+categories: [machine learning, logistic regression, classification, gradient descent]
 ---
+
+::: {.callout-note appearance="simple"}
+This is the foundational case of the [Logistic Regression](index.qmd) module: a
+**binary** classifier with **two raw features** and a **linear** decision
+boundary. Later notes extend it to multi-class (one-vs-rest, one-vs-one,
+multinomial/softmax) and to non-linear boundaries via feature expansion.
+:::
 
 ## Setup
 
@@ -170,10 +177,17 @@ $$
 $$
 
 ::: {.callout-note title="Same result the long way"}
-In the handwritten notes this is derived by fully expanding
+The same gradient can be obtained by fully expanding
 $g = \frac{1}{1 + e^{-h}}$ and cancelling the $e^{-h}$ factors step by step. The
 sigmoid-derivative identity $g' = g(1-g)$ used above is just a shortcut to the
-identical result.
+identical result:
+
+$$
+\frac{y\,e^{-h} - (1 - y)}{1 + e^{-h}}\,x_2
+= \frac{y(1 + e^{-h}) - 1}{1 + e^{-h}}\,x_2
+= \Big(y - \tfrac{1}{1 + e^{-h}}\Big)x_2
+= (y - g)\,x_2 .
+$$
 :::
 
 ## Generalizing to every weight
@@ -216,6 +230,11 @@ this loop. Working through the derivation is purely to build intuition for
 back to later.
 :::
 
----
+## Acknowledgment
 
-*Transcribed from my handwritten notes (`_source/LogisticRegression.pdf`).*
+These notes are based on my work for **24-887 — Machine Learning & Artificial
+Intelligence for Engineers**, taught by Dr. Levent Burak Kara as part of Carnegie
+Mellon University's
+[AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+graduate certificate. All credit for the course material and problem framing
+goes to the instructor and CMU; any errors in these notes are my own.

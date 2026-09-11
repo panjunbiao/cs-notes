@@ -2,6 +2,9 @@
 /_site/
 /.quarto/
 
+# Private raw sources (e.g. handwritten scans) — kept locally, never committed
+/_source/
+
 # Jupyter / Python
 .ipynb_checkpoints/
 __pycache__/

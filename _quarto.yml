@@ -15,7 +15,7 @@ website:
         text: Home
       - text: "Notes"
         menu:
-          - href: notes/logistic-regression.qmd
+          - href: notes/logistic-regression/index.qmd
             text: Logistic Regression
     right:
       - icon: github
@@ -27,7 +27,15 @@ website:
     contents:
       - section: "Machine Learning"
         contents:
-          - notes/logistic-regression.qmd
+          - section: "Logistic Regression"
+            href: notes/logistic-regression/index.qmd
+            contents:
+              - notes/logistic-regression/two-class-linear.qmd
+  page-footer:
+    center: |
+      Notes from CMU
+      [24-887 Machine Learning & AI for Engineers](https://www.cmu.edu/online/ai-engineering-fundamentals).
+      Content credit: the instructor and Carnegie Mellon University.
 
 format:
   html:

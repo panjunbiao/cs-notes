@@ -1,0 +1,218 @@
+# Two-Class, Two-Feature Linear Classifier — original source transcription
+
+> **What this file is.** A faithful, verbatim transcription of my original
+> handwritten derivation, kept as the *source* of the polished note
+> [`two-class-linear.qmd`](two-class-linear.qmd). It intentionally preserves the
+> original wording, notation, strike-throughs (`~~struck~~`), and any mistakes.
+> `[Editorial notes in brackets]` mark spots where the handwriting is ambiguous
+> or where a known slip occurs.
+>
+> This file is deliberately **not published** to the website (the leading `_`
+> tells Quarto to skip it). The corrected/cleaned version lives in
+> `two-class-linear.qmd`.
+
+---
+
+## Page 1
+
+Assuming we need to learn a classifier that has two raw features $x_1$ and
+$x_2$. The classes are $a$ and $b$.
+
+```
+x2
+│  a a a
+│   a a a  a
+│  a  a
+│  a         b
+│        b  b  b
+│     b  b  b  b
+│        b   b
+└────────────────── x1
+```
+
+By observing the plots, we think a linear function of the raw features $x_1,
+x_2$ are enough. We don't need feature expansion here. So here is the
+~~feature~~ **weight** vector.
+
+$$
+\left[\!\left[\;
+\begin{matrix} w_0 \\ w_1 \\ w_2 \end{matrix}
+\;\right]\!\right].
+$$
+
+We first construct feature matrix for training data.
+
+~~w x~~
+
+$$
+\begin{matrix}
+1 & x_1^{(1)} & x_2^{(1)} \\
+1 & x_1^{(2)} & x_2^{(2)} \\
+1 & x_1^{(3)} & x_2^{(3)} \\
+- & - & - \\
+1 & x_1^{(n)} & x_2^{(n)}
+\end{matrix}
+$$
+
+( assume there are $n$ data points. )
+
+$$
+~~[\,w_0\;\;w_1\;\;w_2\,]~~
+\begin{bmatrix}
+1 & x_1^{(1)} & x_2^{(1)} \\
+1 & x_1^{(2)} & x_2^{(2)} \\
+- & - & - \\
+1 & x_1^{(n)} & x_2^{(n)}
+\end{bmatrix}
+\begin{bmatrix} w_0 \\ w_1 \\ w_2 \end{bmatrix}
+=
+\begin{bmatrix} \hat{y}^{(1)} \\ \hat{y}^{(2)} \\ \vdots \\ \hat{y}^{(n)} \end{bmatrix}
+$$
+
+---
+
+## Page 2
+
+In short: $\; X w = \hat{y}$
+
+Now, use sigmoid function $g(h) = \dfrac{1}{1 + e^{-h}}$ to ~~construct~~
+**represent probability**.
+
+the likelihood function ( the joint probability ) ~~of multiple~~
+*[written above the line:]* **independent**
+
+$$
+P = \prod_{i=1}^{n}
+\Big[\; ~~P(\dots\, y\, g(h)\, g(h)~~\;
+P(y{=}1 \mid w)^{\,y^{(i)}} \cdot P(y{=}0 \mid w)^{\,(1 - y^{(i)})} \Big]
+$$
+
+*[Editorial note: written as $P(y{=}1\mid w)$; the conditioning on the input
+$x^{(i)}$ is left implicit.]*
+
+$$
+= \prod_{i=1}^{n}
+\left[
+\left( \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)^{y^{(i)}}
+\cdot
+\left( 1 - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)^{(1 - y^{(i)})}
+\right]
+$$
+
+Now apply maximum likelihood estimation method.
+
+~~=~~ $\ln(P)$
+
+$$
+= \sum_{i=1}^{n}
+\left[
+y^{(i)} \ln\!\left( \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)
++ (1 - y^{(i)}) \ln\!\left( 1 - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)
+\right]
+$$
+
+Now, construct objective function ( loss function )
+
+$$
+L = -\ln(P)
+$$
+
+~~the~~ Now, get $\dfrac{\partial L}{\partial w}$ for gradient descent.
+
+$$
+\frac{\partial L}{\partial w} =
+\begin{bmatrix}
+\frac{\partial L}{\partial w_0} \\[1ex]
+\frac{\partial L}{\partial w_1} \\[1ex]
+\frac{\partial L}{\partial w_2}
+\end{bmatrix}.
+$$
+
+For example:
+
+---
+
+## Page 3
+
+$$
+\frac{\partial L}{\partial w_2}
+= \sum_{i=1}^{n} ~~\dots~~ \frac{\partial}{\partial w_2}
+\left\{ \sum_{i=1}^{n}
+\left( y^{(i)} \ln\!\left( \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right)
++ (1 - y^{(i)}) \ln\!\left( 1 - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right) \right)
+\right\}
+$$
+
+*[Editorial note: the index $i$ appears on two nested $\sum$'s here, and the
+leading minus from $L=-\ln(P)$ is not written on this line — it shows up on the
+next line. Neither affects the final result.]*
+
+$$
+= -\sum_{i=1}^{n} (y^{(i)}) \cdot
+\frac{1}{\frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}}
+\cdot \left( \frac{-1}{(1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})})^2} \right)
+\cdot e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} \cdot (-x_2^{(i)})
+$$
+$$
++ \; (1 - y^{(i)})
+\cdot \frac{1}{1 - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}}
+\cdot (-1) \cdot \left( \frac{-1}{(1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})})^2} \right)
+\cdot e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} \cdot (-x_2^{(i)})
+$$
+
+$$
+= -\sum_{i=1}^{n}
+\frac{y^{(i)} (1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}) \cdot e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} \cdot (-x_2^{(i)})}{(1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})})^2}
+\cdot \frac{-1}{}
+$$
+$$
++ \; (1 - y^{(i)}) \cdot
+\frac{e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} \cdot (-x_2^{(i)})}{(1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})})^2}
+\cdot \frac{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}{e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}
+$$
+
+$$
+= -\sum_{i=1}^{n}
+\left[
+\frac{y^{(i)} \, x_2^{(i)} \, e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}
++ \frac{(1 - y^{(i)})(-x_2^{(i)})}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}
+\right]
+$$
+
+$$
+= -\sum_{i=1}^{n}
+\frac{y^{(i)} x_2^{(i)} e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} - x_2^{(i)} + y^{(i)} x_2^{(i)}}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}
+$$
+
+$$
+= -\sum_{i=1}^{n}
+\frac{y^{(i)} \left( e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})} + 1 \right) - 1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}}
+\cdot x_2^{(i)}
+$$
+
+$$
+= -\sum_{i=1}^{n}
+\left( y^{(i)} - \frac{1}{1 + e^{-(w_0 + w_1 x_1^{(i)} + w_2 x_2^{(i)})}} \right) x_2^{(i)}
+$$
+
+$$
+= -\sum_{i=1}^{n} \left( y^{(i)} - g(\,~~w~~\, x^{(i)} \cdot w') \right) x_2^{(i)}
+$$
+
+---
+
+## Page 4
+
+$$
+= \sum_{i=1}^{n} \left( g(x^{(i)} w') - y^{(i)} \right) x_2^{(i)}
+$$
+
+Then we can apply gradient descent to update $w$ iteratively:
+
+$$
+w^{\text{new}} \leftarrow w - y \sum_{i=1}^{n} \left( g(x^{(i)} w') - y^{(i)} \right) x^{(i)}
+$$
+
+*[Editorial note: the $y$ in front of the sum is the learning rate (step size),
+written with a symbol that resembles the label $y$. In the cleaned note this is
+denoted $\eta$.]*

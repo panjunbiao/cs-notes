@@ -1,0 +1,26 @@
+---
+title: "Logistic Regression"
+subtitle: "Classification with linear (and expanded) decision boundaries"
+listing:
+  contents:
+    - two-class-linear.qmd
+  type: table
+  fields: [title, subtitle, date]
+  sort: "date"
+---
+
+Notes on logistic regression, building up from the simplest binary case toward
+multi-class and non-linear extensions.
+
+## Topics in this module
+
+- **[Two-Class, Two-Feature Linear Classifier](two-class-linear.qmd)** —
+  deriving the loss, gradient, and gradient-descent update by hand.
+- *One-vs-Rest & One-vs-One multi-class classification* — planned.
+- *Multinomial (softmax) logistic regression* — planned.
+- *Feature expansion for non-linear decision boundaries* — planned.
+
+::: {.callout-note appearance="simple"}
+Items marked *planned* are placeholders for notes I'll add as I work through the
+course.
+:::

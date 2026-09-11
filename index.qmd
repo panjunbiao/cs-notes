@@ -14,8 +14,15 @@ library) and to keep a searchable refresher for my future self.
 
 ## Notes
 
-- [Logistic Regression](notes/logistic-regression.qmd) — deriving the loss,
-  gradient, and gradient-descent update for a two-class, two-feature linear classifier.
+- [Logistic Regression](notes/logistic-regression/index.qmd) — binary, multi-class,
+  and non-linear classification, starting from deriving gradient descent by hand.
+
+## Credit
+
+Course material and problem framing are from CMU's **24-887 — Machine Learning &
+Artificial Intelligence for Engineers** (instructor: Dr. Levent Burak Kara), part
+of the [AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+graduate certificate. These are my own study notes; any errors are mine.
 
 ::: {.callout-note}
 These notes are the *source*. The site you're reading is rendered automatically
