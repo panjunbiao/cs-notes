@@ -16,6 +16,8 @@ library) and to keep a searchable refresher for my future self.
 
 - [Logistic Regression](notes/logistic-regression/index.qmd) — binary, multi-class,
   and non-linear classification, starting from deriving gradient descent by hand.
+- [Support Vector Machine](notes/support-vector-machine/index.qmd) — max-margin
+  classification, deriving the weights form and the support-vector (dual) form by hand.
 
 ## Credit
 

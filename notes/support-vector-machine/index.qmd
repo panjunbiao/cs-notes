@@ -1,0 +1,27 @@
+---
+title: "Support Vector Machine"
+subtitle: "Max-margin classification, from the linearly separable case to kernels"
+listing:
+  contents:
+    - hard-margin-linear/index.qmd
+  type: table
+  fields: [title, subtitle, date]
+  sort: "date"
+---
+
+Notes on support vector machines, building up from the simplest linearly
+separable case toward the soft margin, kernels, and multi-class extensions.
+
+## Topics in this module
+
+- **[Hard-Margin Linear SVM](hard-margin-linear/index.qmd)** — deriving the
+  max-margin classifier by hand: the weights form (solved with quadratic
+  programming) and the support-vector form (via the Lagrangian dual and KKT).
+- *Soft-margin SVM (non-separable data, slack variables)* — planned.
+- *Kernels for non-linear decision boundaries* — planned.
+- *Multi-class SVM (one-vs-rest, one-vs-one)* — planned.
+
+::: {.callout-note appearance="simple"}
+Items marked *planned* are placeholders for notes I'll add as I work through the
+course.
+:::

@@ -1,0 +1,377 @@
+---
+title: "Hard-Margin Linear SVM — Original Notes"
+subtitle: "Verbatim transcription of my handwritten derivation (mistakes preserved)"
+date: 2026-09-15
+search: false
+---
+
+::: {.callout-note appearance="simple"}
+This is a faithful, verbatim transcription of my **original handwritten
+derivation** — the *source* behind the cleaned note
+[Hard-Margin Linear SVM](index.qmd). It intentionally preserves the original
+wording, notation, strike-throughs (`~~struck~~`), and any mistakes.
+`[Editorial notes in brackets]` mark spots where the handwriting is ambiguous or
+where a known slip occurs.
+
+This page is intentionally left out of the site navigation and is reachable only
+via the link from the cleaned note.
+:::
+
+---
+
+## Page 1
+
+Deriving SVM. Linear separatable, linear decision boundary, Binary
+classification training data.
+
+**goal (output)**
+
+Training data (left) and the trained result (right):
+
+```
+ x2│                 x2│        ╱ ╱  h(x)=1
+   │ a a       train   │ a a   ╱ ╱ h(x)=w1x1+w2x2+b=0
+   │ a a a a  ═════▶   │  a a ╱ ╱ ╱ h(x)=-1
+   │ a a               │    ╱ ╱ ╱
+   │     b b b         │  ╱ ╱ ╱ b   ▲ margin M
+   └─────────── x1     └──────────── x1
+                          maximized margine M
+```
+
+The SVM.
+
+given any point in plain $(x^*, y^*)$,
+
+$$
+h(x^*) = w^\top x^* + b = \left( \sum_{i \in \text{Support Vector}} d_i\, y_i\, \big(X^{(i)}\big)^\top \cdot x^* \right) + b
+$$
+
+*[Editorial note: the multiplier is written as a handwritten symbol I read as
+$d_i$; it varies a little across the pages (sometimes closer to $\alpha$). It is
+the **Lagrange multiplier**, standardly written $\alpha_i$ — which is what the
+cleaned note uses.]*
+
+$$
+y^* =
+\begin{cases}
+1, & \text{when } h(x^*) > 0 \\
+-1, & \text{when } h(x^*) \le 0
+\end{cases}
+$$
+
+Refresher: unit length of normal vector of the decision line.
+
+$$
+\hat{n} = \frac{w}{\lVert w \rVert}
+$$
+
+Below is the deriving process. can be skipped if already familiar.
+
+Let ~~$P = (x\dots\,a)$~~ $\;P = (x_1^P,\, x_2^P), \quad Q = (x_1^Q,\, x_2^Q)$
+
+$P, Q$ satisfy:
+
+$$
+\begin{aligned}
+(1)\quad & w_1 x_1^P + w_2 x_2^P + b = 0 \\
+(2)\quad & w_1 x_1^Q + w_2 x_2^Q + b = 0
+\end{aligned}
+$$
+
+---
+
+## Page 2
+
+The vector $v$ from $P$ to $Q$
+
+$$
+v = \begin{bmatrix} x_1^Q - x_1^P \\ x_2^Q - x_2^P \end{bmatrix}
+$$
+
+~~$\$$~~ subtract equation (1) from (2)
+
+$$
+(w_1 x_1^Q + w_2 x_2^Q + b) - (w_1 x_1^P + w_1 x_1^P + b) = 0
+$$
+
+*[Editorial note: the second parenthesis is written $w_1 x_1^P + w_1 x_1^P + b$;
+it should read $w_1 x_1^P + w_2 x_2^P + b$. A slip of the pen — the next line uses
+the correct terms.]*
+
+So, $\; w_1 (x_1^Q - x_1^P) + w_2 (x_2^Q - x_2^P) = 0$
+
+is equivalent to:
+
+$$
+\begin{bmatrix} w_1 \\ w_2 \end{bmatrix} \cdot \begin{bmatrix} x_1^Q - x_1^P \\ x_2^Q - x_2^P \end{bmatrix} = 0
+$$
+
+since the dot product of two vector is $0$, they are perpendicular.
+
+$$
+\begin{bmatrix} w_1 \\ w_2 \end{bmatrix} \cdot v = 0
+$$
+
+$$
+n = \begin{bmatrix} w_1 \\ w_2 \end{bmatrix}
+$$
+
+---
+
+Given a set of $n$ train data points. $\;\big\{\, (x_1^{(i)}, x_2^{(i)}) \mid i = 1, 2, \dots n \,\big\}$
+
+let $m > 0$.
+
+if we enforce:
+
+$$
+\begin{aligned}
+y_i = 1, & \quad \text{when } w^\top x^{(i)} + b \ge m \\
+y_i = -1, & \quad \text{when } w^\top x^{(i)} + b \le -m
+\end{aligned}
+$$
+
+we say the decision margin will be $2m$.
+
+we can absorb $m$ into $w$ and $b$.
+
+$$
+\begin{aligned}
+y_i = 1, & \quad \text{when } \frac{w^\top}{m} x^{(i)} + \frac{b}{m} \ge 1 \\
+y_i = -1, & \quad \text{when } \frac{w^\top}{m} x^{(i)} + \frac{b}{m} \le -1
+\end{aligned}
+$$
+
+now $\dfrac{w^\top}{m}$ becomes $(w^*)^\top$, $\dfrac{b}{m}$ becomes $b^*$.
+
+But we can simplify it and just use $w^\top, b$.
+
+---
+
+## Page 3
+
+Let :
+
+$$
+\begin{aligned}
+y_i = 1, & \quad \text{when } w^\top x^{(i)} + b \ge 1 \\
+y_i = -1, & \quad \text{when } w^\top x^{(i)} + b \le -1
+\end{aligned}
+$$
+
+The margin becomes $\dfrac{2}{\lVert w \rVert}$.
+
+Below we will derive the margin. ( can be skipped if already familiar )
+
+find $x^+$ and $x^-$ from the train data, such that.
+
+$$
+w^\top x^+ + b = 1, \quad \text{and} \quad w^\top x^- + b = -1.
+$$
+
+To get margin, we just need the vector $x^+ - x^-$ projection scalar on the normal vector.
+
+$$
+M = \frac{(x^+ - x^-) \cdot n}{\lVert n \rVert}
+= \frac{(x^+ - x^-) \cdot \begin{bmatrix} w_1 \\ w_2 \end{bmatrix}}{\sqrt{w_1^2 + w_2^2}}
+= \frac{\begin{bmatrix} x_1^+ \\ x_2^+ \end{bmatrix} \cdot \begin{bmatrix} w_1 \\ w_2 \end{bmatrix} - \begin{bmatrix} x_1^- \\ x_2^- \end{bmatrix} \cdot \begin{bmatrix} w_1 \\ w_2 \end{bmatrix}}{\lVert w \rVert}
+$$
+
+$$
+= \frac{w^\top x^+ - w^\top x^-}{\lVert w \rVert}
+= \frac{(1 - b) - (-1 - b)}{\lVert w \rVert}
+= \frac{2}{\lVert w \rVert}
+$$
+
+So to generate maximized margin $M$, ~~$\dots$~~
+
+We can equivalenty minimize: $\;\dfrac{1}{2} \lVert w \rVert^2$
+
+but still be constrait by:
+
+$$
+\begin{aligned}
+(1)\quad & y_i = 1, \; \text{for}: \; w^\top x^{(i)} + b \ge 1 \\
+(2)\quad & y_i = -1, \; \text{for}: \; w^\top x^{(i)} + b \le -1
+\end{aligned}
+$$
+
+(1) and (2) can be combine as:
+
+$$
+y_i (w^\top x^{(i)} + b) \ge 1
+$$
+
+---
+
+## Page 4
+
+We can use `cvxopt.solvers.qp()`, a quadratic programming solver, to solve these
+formulas.
+
+In `cvxopt.solvers.qp(P, q, G, h, A, b)` is to minimize $\;\dfrac{1}{2} \cdot x^\top P x + q^\top x,$
+
+Subject to :
+
+$$
+\begin{aligned}
+G x &\le h \\
+A x &= b
+\end{aligned}
+$$
+
+in our case:
+
+$$
+x = \begin{bmatrix} w_1 \\ w_2 \\ b \end{bmatrix}, \quad
+P = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{bmatrix}, \quad
+q = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}.
+$$
+
+~~$A =$~~ $A$ an[d] $b$ are not needed.
+
+$$
+h = \begin{bmatrix} -1 \\ -1 \\ \vdots \\ -1 \end{bmatrix} \; (n\ \text{rows}), \quad
+G = \begin{bmatrix}
+-y_1 x_1^{(1)} & -y_1 x_2^{(1)} & -y_1 \\
+-y_2 x_1^{(2)} & -y_2 x_2^{(2)} & -y_2 \\
+& \cdots & \\
+-y_n x_1^{(n)} & -y_n x_2^{(n)} & -y_n
+\end{bmatrix}
+$$
+
+~~$G = [\, x_1\ x_2\ \dots \,]$~~ ~~$+ q =$~~
+
+$$
+\left( G = \begin{bmatrix} x_1^{(1)} & x_2^{(1)} & 1 \\ x_1^{(2)} & x_2^{(2)} & 1 \\ x_1^{(n)} & x_2^{(n)} & 1 \end{bmatrix} * y^\top * (-1) \right)
+$$
+
+$$
+y_i (w^\top x^{(i)} + b) \ge 1 \;\Longleftrightarrow\; -y_i (w^\top x^{(i)} + b) \le -1
+$$
+
+---
+
+Now we find solution, from which we can construce SVM.
+
+$$
+y^* = \text{class}\left( ~~[\dots]~~ [\, x_1^*\ \ x_2^* \,] \begin{bmatrix} w_1 \\ w_2 \end{bmatrix} + b \right)
+$$
+
+---
+
+## Page 5
+
+But the above formula does not directy tell us which data points are support
+vectors. How do we find them?
+
+The approach is to reformulat quadratic programming with linear constraints to
+~~Lagran~~ Lagrangian formulation.
+
+the quadratic programming:
+
+$$
+\underset{w, b}{\text{minimize}}\ \frac{1}{2} \lVert w \rVert^2.
+$$
+
+subject to: $\; y_i (w^\top x^{(i)} + b) \ge 1$
+
+$\Longrightarrow$ Lagrangian formulation
+
+$$
+\underset{}{\text{minimize}}\ L_p(w, b, d_i) = \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^{n} d_i \big( y_i (w^\top x^{(i)} + b) - 1 \big)
+$$
+
+subject to $\; d_i \ge 0$
+
+So. $\;\dfrac{\partial L_p}{\partial w} = 0 \;\Rightarrow\; w = \sum_{i=1}^{n} d_i\, y_i\, x^{(i)}.$
+
+$$
+\left( \text{for example}: \frac{\partial L}{\partial w_1} = \frac{1}{2} \cdot 2 w_1 - \sum_{i=1}^{n} d_i \big( y_i (x_1^{(i)}) \big) = w_1 - \sum_{i=1}^{n} d_i\, y_i\, x_1^{(i)} \right)
+$$
+
+$$
+\frac{\partial L_p}{\partial b} = 0 \;\Rightarrow\; \sum_{i=1}^{n} d_i\, y_i = 0
+$$
+
+Now, calculate the components of $L_p$.
+
+$$
+\lVert w \rVert^2 = w^\top \cdot w = \left( \sum_{i=1}^{n} d_i\, y_i\, x^{(i)} \right)^\top \left( \sum_{j=1}^{n} d_j\, y_j\, x^{(j)} \right)
+$$
+
+$$
+= \left( \sum_{i=1}^{n} d_i\, y_i\, \big(x^{(i)}\big)^\top \right) \left( \sum_{j=1}^{n} d_j\, y_j\, x^{(j)} \right)
+$$
+
+$$
+= \Big( d_1 y_1 (x^{(1)})^\top + d_2 y_2 (x^{(2)})^\top + \dots + d_n y_n (x^{(n)})^\top \Big) \Big( d_1 y_1 x^{(1)} + d_2 y_2 x^{(2)} + \dots + d_n y_n x^{(n)} \Big)
+$$
+
+$$
+= \sum_{i=1}^{n} \sum_{j=1}^{n} d_i\, d_j\, y_i\, y_j\, \big(x^{(i)}\big)^\top \cdot x^{(j)}
+$$
+
+---
+
+## Page 6
+
+And.
+
+$$
+\sum_{i=1}^{n} d_i\, y_i\, w^\top x^{(i)}
+= \sum_{i=1}^{n} d_i\, y_i \left( \sum_{j=1}^{n} d_j\, y_j\, x^{(j)} \right)^\top x^{(i)}
+= \sum_{i=1}^{n} \sum_{j=1}^{n} d_i\, d_j\, y_i\, y_j\, \big(x^{(j)}\big)^\top x^{(i)}
+$$
+
+So,
+
+$$
+\begin{aligned}
+L_p(w, b, d_i) &= \frac{1}{2} \lVert w \rVert^2 - \sum_{i=1}^{n} d_i \big( y_i (w^\top x^{(i)} + b) - 1 \big) \\
+&= \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} d_i d_j y_i y_j (x^{(i)})^\top (x^{(j)}) - \sum_{i=1}^{n} d_i y_i w^\top x^{(i)} - \sum_{i=1}^{n} d_i y_i b + \sum_{i=1}^{n} d_i \\
+&= \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} d_i d_j y_i y_j (x^{(i)})^\top (x^{(j)}) - \sum_{i=1}^{n} \sum_{j=1}^{n} d_i d_j y_i y_j (x^{(i)})^\top (x^{(i)}) - 0 + \sum_{i=1}^{n} d_i \\
+&= \sum_{i=1}^{n} d_i - \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} d_i d_j y_i y_j (x^{(i)})^\top \cdot x^{(j)}
+\end{aligned}
+$$
+
+Subject to: $\; d_i \ge 0,\;$ and $\; \sum_{i=1}^{n} d_i\, y_i = 0$
+
+---
+
+Recall the $d_i$ was introduced to include conserataints.
+
+$$
+y_i (w^\top x^{(i)} + b) \ge 1.
+$$
+
+So. $d_i$ should be as large as possible, so that decision is clear.
+
+*[Editorial note: this line is the intuition I want to double-check — see the
+"Questions I worked through" section in the cleaned note. Because the dual also
+has the $-\tfrac{1}{2}\sum\sum d_i d_j\dots$ penalty term and the constraint
+$\sum d_i y_i = 0$, $d_i$ is **not** simply driven "as large as possible."]*
+
+Thus, the Lagrangian Problem is actually:
+
+$$
+\underset{d}{\max}\ \underset{w, b}{\min}\ L_p(w, b, d)
+$$
+
+This can only be achieved, when ~~$\$$~~ $x^{(i)}$ is support vector, such that
+$y_i(w^\top x^{(i)} + b) - 1 = 0$, $d_i$ can be $> 0$.
+
+non support vector, $d_i = 0$.
+
+So: $\; w = \sum_{i=1}^{n} d_i y_i x_i = \sum_{i \in SV} d_i y_i x^{(i)}$
+
+So, put all things together, we get:
+
+$$
+h(x^*) = w^\top x^* + b = \left( \sum_{i \in SV} d_i y_i (x^{(i)})^\top \cdot x^* \right) + b
+$$
+
+---
+
+← Back to the cleaned note:
+[Hard-Margin Linear SVM](index.qmd).

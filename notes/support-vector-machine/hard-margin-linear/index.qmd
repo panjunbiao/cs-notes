@@ -1,0 +1,448 @@
+---
+title: "Hard-Margin Linear SVM"
+subtitle: "Deriving the max-margin classifier by hand — weights form, quadratic programming, and the Lagrangian dual (support-vector form)"
+date: 2026-09-15
+categories: [machine learning, support vector machine, classification, convex optimization, duality]
+---
+
+::: {.callout-note appearance="simple"}
+This is the foundational case of the [Support Vector Machine](../index.qmd)
+module: a **binary**, **linearly separable** problem with **two raw features**
+and a **linear** decision boundary — the *hard-margin* SVM. Later notes extend it
+to the soft margin (non-separable data), kernels (non-linear boundaries), and
+multi-class.
+
+I derive the classifier two ways — directly in the **weights** $\mathbf{w}$ (solved
+with a quadratic-programming solver), and in terms of the **support vectors** (via
+the Lagrangian and its dual). The point of doing it by hand is to build intuition
+for *why* the support vectors are the only points that matter.
+
+📄 Prefer the raw version? See my [original notes](source.qmd) — a verbatim
+transcription of the handwritten derivation, mistakes and all.
+:::
+
+::: {.callout-tip appearance="simple"}
+**Questions I worked through.** While deriving this I got stuck on a handful of
+points and talked them over. Those questions turned out to be the crux of really
+understanding SVMs, so I've folded them in as **"Question I had"** callouts at the
+spot in the derivation where each one comes up.
+:::
+
+## Setup
+
+Suppose we need to learn a classifier with two raw features $x_1$ and $x_2$, and
+two classes labelled $y \in \{+1, -1\}$. The training data looks linearly
+separable, so a straight line (a **linear** decision boundary) should do. Many
+lines separate the classes; the SVM picks the one that leaves the **widest gap**
+(margin $M$) between them:
+
+```
+        a    a    a          (class y = +1)
+     ───────────────────      h(x) = +1   upper margin
+             a  ●  ← support vector (on the margin)
+     ═══════════════════      h(x) =  0   boundary
+             b  ●  ← support vector (on the margin)
+     ───────────────────      h(x) = -1   lower margin
+        b    b    b          (class y = -1)
+
+                     ↕  margin  M = 2 / ‖w‖  (maximized)
+```
+
+Write the linear score as
+
+$$
+h(\mathbf{x}) = \mathbf{w}^\top \mathbf{x} + b = w_1 x_1 + w_2 x_2 + b,
+$$
+
+with decision boundary $h(\mathbf{x}) = 0$ and the two **margin lines**
+$h(\mathbf{x}) = \pm 1$. The prediction is just the side of the boundary a point
+falls on:
+
+$$
+y^* =
+\begin{cases}
++1, & h(\mathbf{x}^*) > 0 \\
+-1, & h(\mathbf{x}^*) \le 0.
+\end{cases}
+$$
+
+## The weight vector is the normal to the boundary
+
+A quick but useful fact: $\mathbf{w} = [w_1, w_2]^\top$ points **perpendicular** to
+the decision line. Take any two points $P = (x_1^P, x_2^P)$ and $Q = (x_1^Q, x_2^Q)$
+that lie *on* the boundary, so both satisfy $h = 0$:
+
+$$
+w_1 x_1^P + w_2 x_2^P + b = 0, \qquad w_1 x_1^Q + w_2 x_2^Q + b = 0.
+$$
+
+Subtracting the first from the second cancels $b$:
+
+$$
+w_1 (x_1^Q - x_1^P) + w_2 (x_2^Q - x_2^P) = 0
+\;\;\Longleftrightarrow\;\;
+\begin{bmatrix} w_1 \\ w_2 \end{bmatrix} \cdot
+\underbrace{\begin{bmatrix} x_1^Q - x_1^P \\ x_2^Q - x_2^P \end{bmatrix}}_{\mathbf{v}\,=\,\overrightarrow{PQ}} = 0.
+$$
+
+The vector $\mathbf{v}$ runs *along* the boundary, and its dot product with
+$\mathbf{w}$ is zero — so $\mathbf{w}$ is the **normal** to the boundary. The unit
+normal is
+
+$$
+\hat{\mathbf{n}} = \frac{\mathbf{w}}{\lVert \mathbf{w} \rVert}.
+$$
+
+## Canonical form: the functional margin
+
+Start from a symmetric band of half-width $m > 0$ around the boundary. Require
+every point to sit on the correct side of its margin line:
+
+$$
+\mathbf{w}^\top \mathbf{x}^{(i)} + b \ge m \;\text{ for } y_i = +1,
+\qquad
+\mathbf{w}^\top \mathbf{x}^{(i)} + b \le -m \;\text{ for } y_i = -1.
+$$
+
+Both $\mathbf{w}$ and $m$ are free to scale, so we can **absorb $m$** by dividing
+through: replacing $\mathbf{w}/m \to \mathbf{w}$ and $b/m \to b$ turns the right-hand
+sides into $\pm 1$. This *canonical* (or *functional-margin*) normalization fixes
+the scale without loss of generality:
+
+$$
+\mathbf{w}^\top \mathbf{x}^{(i)} + b \ge +1 \;\text{ for } y_i = +1,
+\qquad
+\mathbf{w}^\top \mathbf{x}^{(i)} + b \le -1 \;\text{ for } y_i = -1.
+$$
+
+Multiplying each case by its label $y_i$ merges the two into a single constraint:
+
+$$
+\boxed{\,y_i \big(\mathbf{w}^\top \mathbf{x}^{(i)} + b\big) \ge 1\,}
+\qquad i = 1, \dots, n.
+$$
+
+## The geometric margin is $2 / \lVert \mathbf{w} \rVert$
+
+Pick a point $\mathbf{x}^+$ on the $+1$ margin line and $\mathbf{x}^-$ on the $-1$
+line, so $\mathbf{w}^\top \mathbf{x}^+ + b = 1$ and $\mathbf{w}^\top \mathbf{x}^- + b = -1$.
+The margin $M$ is the length of $(\mathbf{x}^+ - \mathbf{x}^-)$ **projected onto the
+unit normal**:
+
+$$
+M = \frac{(\mathbf{x}^+ - \mathbf{x}^-) \cdot \mathbf{w}}{\lVert \mathbf{w} \rVert}
+= \frac{(\mathbf{w}^\top \mathbf{x}^+) - (\mathbf{w}^\top \mathbf{x}^-)}{\lVert \mathbf{w} \rVert}
+= \frac{(1 - b) - (-1 - b)}{\lVert \mathbf{w} \rVert}
+= \frac{2}{\lVert \mathbf{w} \rVert}.
+$$
+
+So **maximizing the margin** $\dfrac{2}{\lVert \mathbf{w} \rVert}$ is the same as
+**minimizing** $\lVert \mathbf{w} \rVert$, and (for a smooth, convex objective) the
+same as minimizing $\tfrac{1}{2}\lVert \mathbf{w} \rVert^2$.
+
+## The primal problem (weights form)
+
+Putting the objective and the constraint together gives the **hard-margin SVM** in
+its *primal* form — the one that solves directly for the weights:
+
+$$
+\underset{\mathbf{w}, b}{\text{minimize}} \;\; \frac{1}{2}\lVert \mathbf{w} \rVert^2
+\qquad \text{subject to} \qquad
+y_i \big(\mathbf{w}^\top \mathbf{x}^{(i)} + b\big) \ge 1, \quad i = 1, \dots, n.
+$$
+
+This is a **quadratic program**: a convex quadratic objective with linear
+inequality constraints.
+
+### Solving it with a QP solver
+
+A generic QP solver such as `cvxopt.solvers.qp(P, q, G, h, A, b)` minimizes
+
+$$
+\frac{1}{2}\mathbf{z}^\top P\, \mathbf{z} + \mathbf{q}^\top \mathbf{z}
+\qquad \text{subject to} \qquad
+G \mathbf{z} \le \mathbf{h}, \;\; A \mathbf{z} = \mathbf{b}.
+$$
+
+Matching our problem, the unknown is $\mathbf{z} = [\,w_1,\, w_2,\, b\,]^\top$ and:
+
+$$
+P = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{bmatrix},
+\quad
+\mathbf{q} = \mathbf{0},
+\quad
+G = -\begin{bmatrix}
+y_1 x_1^{(1)} & y_1 x_2^{(1)} & y_1 \\
+y_2 x_1^{(2)} & y_2 x_2^{(2)} & y_2 \\
+\vdots & \vdots & \vdots \\
+y_n x_1^{(n)} & y_n x_2^{(n)} & y_n
+\end{bmatrix},
+\quad
+\mathbf{h} = -\mathbf{1}.
+$$
+
+There are no equality constraints, so $A, \mathbf{b}$ are unused. The objective
+$\tfrac12\mathbf{z}^\top P\mathbf{z} = \tfrac12(w_1^2 + w_2^2) = \tfrac12\lVert\mathbf{w}\rVert^2$
+(the bias $b$ is correctly *not* penalized, which is why $P$'s last diagonal entry
+is $0$). Each constraint row encodes
+$y_i(\mathbf{w}^\top\mathbf{x}^{(i)} + b) \ge 1 \Leftrightarrow -y_i(\mathbf{w}^\top\mathbf{x}^{(i)} + b) \le -1$.
+
+Solving returns $\mathbf{w}, b$ directly, and we can classify a new point with
+$y^* = \operatorname{sign}\!\big([\,x_1^*\ x_2^*\,]\,\mathbf{w} + b\big)$.
+
+## Why reformulate? Finding the support vectors
+
+The weights form gives us a working classifier, but it does **not** tell us *which*
+training points define the boundary. Those points — the ones lying exactly on the
+margin lines — are the **support vectors**, and they're the whole idea behind the
+method. To surface them, we rewrite the same problem in a form whose variables are
+attached to the *training points* rather than to $\mathbf{w}$. That's the
+**Lagrangian dual**.
+
+::: {.callout-tip title="Question I had: what does “dual optimization problem” mean?"}
+The **dual** is not a different problem — it's the *same* optimization, rewritten
+so that instead of optimizing the model parameters $\mathbf{w}, b$ we optimize one
+**Lagrange multiplier $\alpha_i \ge 0$ per constraint** (i.e. per training point).
+
+| | Primal | Dual |
+|---|---|---|
+| Optimize over | $\mathbf{w}, b$ | $\alpha_1, \dots, \alpha_n$ |
+| Objective | $\tfrac12\lVert\mathbf{w}\rVert^2$ | $\sum_i \alpha_i - \tfrac12\sum_{i,j}\alpha_i\alpha_j y_i y_j\,\mathbf{x}_i^\top\mathbf{x}_j$ |
+| Asks | "Where is the best boundary?" | "How much does each point matter for that boundary?" |
+
+Once we solve for the $\alpha_i$, we recover the classifier through
+$\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}^{(i)}$. The points with $\alpha_i > 0$
+are exactly the support vectors — that's what makes the dual worth the detour.
+:::
+
+## The Lagrangian and its stationarity conditions
+
+Introduce a multiplier $\alpha_i \ge 0$ for each inequality constraint and fold
+them into the objective. (In my handwritten notes I called these multipliers
+$d_i$; the standard symbol is $\alpha_i$.)
+
+$$
+L_p(\mathbf{w}, b, \boldsymbol{\alpha})
+= \frac{1}{2}\lVert \mathbf{w} \rVert^2
+- \sum_{i=1}^{n} \alpha_i \Big[\, y_i \big(\mathbf{w}^\top \mathbf{x}^{(i)} + b\big) - 1 \,\Big],
+\qquad \alpha_i \ge 0.
+$$
+
+At the optimum $L_p$ is **stationary** in the primal variables. Setting the
+gradients to zero:
+
+$$
+\frac{\partial L_p}{\partial \mathbf{w}} = \mathbf{w} - \sum_{i=1}^{n} \alpha_i y_i \mathbf{x}^{(i)} = \mathbf{0}
+\;\;\Longrightarrow\;\;
+\boxed{\;\mathbf{w} = \sum_{i=1}^{n} \alpha_i y_i \mathbf{x}^{(i)}\;}
+$$
+
+$$
+\frac{\partial L_p}{\partial b} = -\sum_{i=1}^{n} \alpha_i y_i = 0
+\;\;\Longrightarrow\;\;
+\boxed{\;\sum_{i=1}^{n} \alpha_i y_i = 0\;}
+$$
+
+The first identity is already a headline result: **the optimal weight vector is a
+linear combination of the training points**, weighted by $\alpha_i y_i$.
+
+## From the Lagrangian to the dual
+
+::: {.callout-tip title="Question I had: how do you get the dual from the Lagrangian?"}
+The recipe is: **minimize $L_p$ over the primal variables $\mathbf{w}, b$, and
+whatever is left depends only on $\boldsymbol{\alpha}$** — that's the dual function
+$g(\boldsymbol{\alpha}) = \min_{\mathbf{w},b} L_p$. Concretely, substitute the two
+stationarity results above back into $L_p$. Below I do exactly that, term by term.
+:::
+
+Substitute $\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}^{(i)}$ into the three pieces
+of $L_p$.
+
+**The squared-norm term.** Using $\lVert \mathbf{w} \rVert^2 = \mathbf{w}^\top \mathbf{w}$,
+
+$$
+\lVert \mathbf{w} \rVert^2
+= \left( \sum_{i} \alpha_i y_i \mathbf{x}^{(i)} \right)^{\!\top} \left( \sum_{j} \alpha_j y_j \mathbf{x}^{(j)} \right)
+= \sum_{i=1}^{n} \sum_{j=1}^{n} \alpha_i \alpha_j\, y_i y_j\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^{(j)}.
+$$
+
+::: {.callout-note title="Question I had: why does ‖w‖² become a *double* sum?"}
+Multiplying two sums produces a term for **every pair** of indices, so you need two
+independent counters $i$ and $j$:
+
+$$
+\left( \sum_i a_i \right)\!\left( \sum_j b_j \right) = \sum_i \sum_j a_i b_j.
+$$
+
+It's the summation version of $(a_1 + a_2)(b_1 + b_2) = a_1 b_1 + a_1 b_2 + a_2 b_1 + a_2 b_2$.
+Reusing one letter ($\sum_i\sum_i$) would wrongly keep only the "diagonal" pairs
+$i = j$, dropping the cross terms — hence distinct $i$ and $j$.
+:::
+
+::: {.callout-note title="Question I had: does the transpose pass through the sum?"}
+Yes — because $\alpha_i$ and $y_i$ are **scalars**, and transpose distributes over
+addition and scalar multiples, $(A+B)^\top = A^\top + B^\top$ and $(cA)^\top = cA^\top$:
+
+$$
+\left( \sum_i \alpha_i y_i \mathbf{x}^{(i)} \right)^{\!\top}
+= \sum_i \alpha_i y_i \big(\mathbf{x}^{(i)}\big)^\top .
+$$
+
+The one caveat is **order**: for actual matrices $(AB)^\top = B^\top A^\top$
+reverses the factors. Here every $\alpha_i y_i$ is a scalar, so there's nothing to
+reorder and only the vector $\mathbf{x}^{(i)}$ gets transposed.
+:::
+
+**The margin term.** Substituting $\mathbf{w}$ once more (and reusing the double-sum
+trick),
+
+$$
+\sum_{i} \alpha_i y_i\, \mathbf{w}^\top \mathbf{x}^{(i)}
+= \sum_{i} \sum_{j} \alpha_i \alpha_j\, y_i y_j\, \big(\mathbf{x}^{(j)}\big)^\top \mathbf{x}^{(i)}
+= \sum_{i}\sum_{j} \alpha_i \alpha_j\, y_i y_j\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^{(j)}.
+$$
+
+Note this is the **same** double sum as $\lVert \mathbf{w} \rVert^2$.
+
+**The bias term.** It vanishes, because $\sum_i \alpha_i y_i = 0$:
+
+$$
+-\,b \sum_{i} \alpha_i y_i = 0.
+$$
+
+**Assemble.** With $S \equiv \sum_{i,j} \alpha_i \alpha_j y_i y_j (\mathbf{x}^{(i)})^\top \mathbf{x}^{(j)}$,
+the norm term contributes $+\tfrac12 S$, the margin term $-S$, the constant term
+$+\sum_i \alpha_i$, and the two $\tfrac12 S - S = -\tfrac12 S$ combine:
+
+$$
+g(\boldsymbol{\alpha})
+= \sum_{i=1}^{n} \alpha_i - \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} \alpha_i \alpha_j\, y_i y_j\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^{(j)}.
+$$
+
+## The dual problem
+
+Everything now depends only on $\boldsymbol{\alpha}$:
+
+$$
+\boxed{\;
+\underset{\boldsymbol{\alpha}}{\max} \;\; \sum_{i=1}^{n} \alpha_i - \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} \alpha_i \alpha_j\, y_i y_j\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^{(j)}
+\;}
+\qquad \text{s.t.} \quad \alpha_i \ge 0, \;\; \sum_{i=1}^{n} \alpha_i y_i = 0.
+$$
+
+This is *also* a quadratic program, but in the $\alpha_i$. Solving it hands us the
+$\alpha_i$, and hence the support vectors.
+
+::: {.callout-important title="Question I had: shouldn’t the product be as *large* as possible, making Lₚ small?"}
+This was my biggest sticking point (my handwritten notes even say "$\alpha_i$
+should be as large as possible"). The catch is that the SVM Lagrangian is a
+**saddle point**, not a plain minimization:
+
+$$
+\underset{\boldsymbol{\alpha} \ge 0}{\max}\;\underset{\mathbf{w}, b}{\min}\; L_p(\mathbf{w}, b, \boldsymbol{\alpha}).
+$$
+
+We minimize over $\mathbf{w}, b$ **and** maximize over $\boldsymbol{\alpha}$ — the two
+act in *opposite* directions. So "increasing $\alpha_i s_i$ makes $L_p$ smaller"
+is the wrong lens; for the $\alpha$-player, smaller $L_p$ is the wrong way.
+
+And $\alpha_i$ is **not** driven to infinity, for two reasons visible in the dual
+objective above:
+
+- the $-\tfrac12\sum_{i,j}\alpha_i\alpha_j y_i y_j \mathbf{x}_i^\top\mathbf{x}_j$ term is a
+  quadratic **penalty** that eventually dominates the linear $+\sum_i\alpha_i$ gain, so
+  the maximum is finite;
+- the equality constraint $\sum_i \alpha_i y_i = 0$ ties the multipliers together.
+
+What actually happens is that each constraint's *slack* decides its multiplier —
+which is precisely the KKT complementary-slackness condition below.
+:::
+
+## Support vectors via KKT complementary slackness
+
+::: {.callout-tip title="Question I had: what is the KKT condition, and why is that product zero?"}
+The **Karush–Kuhn–Tucker (KKT) conditions** are the constrained analogue of
+"set the derivative to zero" — the conditions that must hold at the optimum of a
+constrained problem. The key one here is **complementary slackness**:
+
+$$
+\alpha_i \Big[\, y_i \big(\mathbf{w}^\top \mathbf{x}^{(i)} + b\big) - 1 \,\Big] = 0 \quad \text{for every } i.
+$$
+
+**Why must the product be zero?** Both factors are non-negative at a feasible
+optimum: $\alpha_i \ge 0$ (multiplier), and the "slack"
+$s_i \equiv y_i(\mathbf{w}^\top\mathbf{x}^{(i)} + b) - 1 \ge 0$ (the constraint). A
+product of two non-negative numbers that the saddle point forces to zero means **at
+least one factor is zero** — they can't both be positive:
+
+- **$\alpha_i = 0$, slack $> 0$** — the point sits strictly *outside* the margin. It
+  has room to spare and pulls no weight: a **non-support vector**.
+- **$\alpha_i > 0$, slack $= 0$** — then $y_i(\mathbf{w}^\top\mathbf{x}^{(i)} + b) = 1$,
+  i.e. the point lies *exactly on* its margin line: a **support vector**.
+
+"Complementary slackness" is just this: either the constraint has slack, or its
+multiplier is active — never both.
+:::
+
+Complementary slackness is what makes the SVM *sparse*. Every non-support vector
+has $\alpha_i = 0$ and therefore drops out of $\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}^{(i)}$:
+
+$$
+\mathbf{w} = \sum_{i=1}^{n} \alpha_i y_i \mathbf{x}^{(i)} = \sum_{i \in SV} \alpha_i y_i \mathbf{x}^{(i)}.
+$$
+
+**The decision boundary is determined entirely by the support vectors.**
+
+## The classifier in support-vector form
+
+Substituting $\mathbf{w} = \sum_{i \in SV} \alpha_i y_i \mathbf{x}^{(i)}$ into
+$h(\mathbf{x}^*) = \mathbf{w}^\top \mathbf{x}^* + b$ gives the classifier written
+purely in terms of the support vectors and inner products between data points:
+
+$$
+\boxed{\;
+h(\mathbf{x}^*) = \sum_{i \in SV} \alpha_i y_i\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^* + b,
+\qquad
+y^* = \operatorname{sign}\big(h(\mathbf{x}^*)\big).
+\;}
+$$
+
+**Recovering $b$.** Pick any support vector $\mathbf{x}^{(k)}$ (where the constraint
+is tight, $y_k(\mathbf{w}^\top\mathbf{x}^{(k)} + b) = 1$) and solve. Using $y_k^2 = 1$:
+
+$$
+b = y_k - \mathbf{w}^\top \mathbf{x}^{(k)} = y_k - \sum_{i \in SV} \alpha_i y_i\, \big(\mathbf{x}^{(i)}\big)^\top \mathbf{x}^{(k)}.
+$$
+
+(In practice one averages this over all support vectors for numerical stability.)
+
+::: {.callout-note title="Why this form matters later"}
+Notice the data enters **only through inner products** $(\mathbf{x}^{(i)})^\top\mathbf{x}^{(j)}$
+— both in the dual objective and in the classifier. That's the hook for the
+**kernel trick**: replace every $(\mathbf{x}^{(i)})^\top\mathbf{x}^{(j)}$ with a kernel
+$K(\mathbf{x}^{(i)}, \mathbf{x}^{(j)})$ to get non-linear boundaries for free. A
+topic for a later note.
+:::
+
+## Recap: the whole chain
+
+$$
+\text{Primal} \;\to\; \text{Lagrangian } L_p \;\xrightarrow{\;\partial L_p/\partial \mathbf{w}=0,\; \partial L_p/\partial b=0\;} \text{substitute back} \;\to\; \text{Dual} \;\xrightarrow{\text{KKT}} \text{support vectors}.
+$$
+
+- **Maximize the margin** $\tfrac{2}{\lVert\mathbf{w}\rVert}$ $\Leftrightarrow$ minimize
+  $\tfrac12\lVert\mathbf{w}\rVert^2$ s.t. $y_i(\mathbf{w}^\top\mathbf{x}^{(i)}+b)\ge 1$.
+- Solve the **primal** directly for $\mathbf{w}, b$ with a QP solver, **or**
+- go to the **dual** to expose the support vectors: $\alpha_i > 0$ only on the margin.
+- The classifier depends only on support vectors and **inner products** of data.
+
+## Acknowledgment
+
+These notes are based on my work for **24-887 — Machine Learning & Artificial
+Intelligence for Engineers**, taught by Professor Levent Burak Kara as part of
+Carnegie Mellon University's
+[AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+graduate certificate. All credit for the course material and problem framing goes
+to the instructor and CMU; any errors in these notes are my own. The "Question I
+had" callouts came out of my own study; I've verified the reasoning here, but treat
+them as a learner's notes rather than an authoritative reference.

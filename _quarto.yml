@@ -17,6 +17,8 @@ website:
         menu:
           - href: notes/logistic-regression/index.qmd
             text: Logistic Regression
+          - href: notes/support-vector-machine/index.qmd
+            text: Support Vector Machine
     right:
       - icon: github
         href: https://github.com/panjunbiao/cs-notes
@@ -35,6 +37,11 @@ website:
                 contents:
                   - text: "NumPy demo (from scratch)"
                     href: notes/logistic-regression/two-class-linear/demo.ipynb
+          - section: "Support Vector Machine"
+            href: notes/support-vector-machine/index.qmd
+            contents:
+              - text: "Hard-Margin Linear SVM"
+                href: notes/support-vector-machine/hard-margin-linear/index.qmd
   page-footer:
     center: |
       Notes from CMU
