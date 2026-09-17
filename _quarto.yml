@@ -42,6 +42,8 @@ website:
             contents:
               - text: "Hard-Margin Linear SVM"
                 href: notes/support-vector-machine/hard-margin-linear/index.qmd
+              - text: "Kernels: a visual tour"
+                href: notes/support-vector-machine/kernel-boundaries/index.ipynb
   page-footer:
     center: |
       Notes from CMU

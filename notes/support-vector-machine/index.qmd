@@ -4,6 +4,7 @@ subtitle: "Max-margin classification, from the linearly separable case to kernel
 listing:
   contents:
     - hard-margin-linear/index.qmd
+    - kernel-boundaries/index.ipynb
   type: table
   fields: [title, subtitle, date]
   sort: "date"
@@ -17,8 +18,11 @@ separable case toward the soft margin, kernels, and multi-class extensions.
 - **[Hard-Margin Linear SVM](hard-margin-linear/index.qmd)** — deriving the
   max-margin classifier by hand: the weights form (solved with quadratic
   programming) and the support-vector form (via the Lagrangian dual and KKT).
+- **[A Visual Tour of SVM Kernels](kernel-boundaries/index.ipynb)** — building
+  intuition for how the linear, polynomial, RBF, and sigmoid kernels shape a
+  decision boundary, using hand-built (untrained) visualizations.
 - *Soft-margin SVM (non-separable data, slack variables)* — planned.
-- *Kernels for non-linear decision boundaries* — planned.
+- *Kernels — the math (feature maps, the kernel trick, Mercer's condition)* — planned.
 - *Multi-class SVM (one-vs-rest, one-vs-one)* — planned.
 
 ::: {.callout-note appearance="simple"}
