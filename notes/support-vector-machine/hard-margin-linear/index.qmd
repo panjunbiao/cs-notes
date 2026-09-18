@@ -393,6 +393,38 @@ $$
 
 **The decision boundary is determined entirely by the support vectors.**
 
+::: {.callout-tip title="Question I had: why does the weight pile onto a few support vectors instead of spreading thin over many points?"}
+It feels like training could just as well hand out tiny non-zero $\alpha_i$ to
+lots of points. It can't — and the reason is that spreading isn't a valid
+optimum, not that the optimizer *prefers* to concentrate.
+
+- **KKT forbids it.** Complementary slackness $\alpha_i\big[y_i(\mathbf{w}^\top\mathbf{x}^{(i)}+b)-1\big]=0$
+  is an on/off switch. A point strictly outside its margin has slack $s_i>0$, which
+  **forces $\alpha_i=0$ exactly**. For many points to share a small $\alpha_i>0$,
+  they'd *all* have to lie exactly on the margin line — which generically they
+  don't. So the "thin smear" configuration violates optimality; those points get
+  switched fully off. Note these are *exact* zeros, not merely small — the sparsity
+  is structural (an equality condition), unlike the soft nudging of L1 penalties.
+- **The boundary only feels its closest points (a quick test).** Take a point deep
+  inside its own cloud and delete it, or slide it further from the boundary — the
+  max-margin solution doesn't move at all. If a point can't influence
+  $(\mathbf{w}, b)$, it must contribute nothing to $\mathbf{w}=\sum_i\alpha_i y_i\mathbf{x}^{(i)}$,
+  i.e. $\alpha_i=0$. Since the margin is a thin sliver, only a handful of points
+  touch it.
+- **A physical picture.** Think of the slab between the two margin lines inflated
+  as thick as possible until it wedges against the nearest points of each class.
+  Those points press back with **reaction forces** — and those forces *are* the
+  $\alpha_i$. Points floating behind the front line touch nothing and push with zero
+  force. This is exactly why $\mathbf{w}=\sum_i\alpha_i y_i\mathbf{x}^{(i)}$ (orientation =
+  sum of contact forces) and $\sum_i\alpha_i y_i=0$ (the two sides' forces balance).
+
+**Soft-margin nuance:** this crisp all-or-nothing story is the hard-margin case.
+With a soft margin (the `C` knob, for non-separable data), points may also sit
+*inside* the margin or be misclassified, and those get $\alpha_i$ capped at $C$ —
+so a few more $\alpha_i$ are non-zero, but the set is still sparse and structured
+(on-margin or margin-violating points), never an even smear over the easy interior.
+:::
+
 ## The classifier in support-vector form
 
 Substituting $\mathbf{w} = \sum_{i \in SV} \alpha_i y_i \mathbf{x}^{(i)}$ into
