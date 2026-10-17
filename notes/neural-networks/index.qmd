@@ -5,6 +5,7 @@ listing:
   contents:
     - forward-propagation/index.qmd
     - forward-propagation/demo.ipynb
+    - architecture-study/index.ipynb
   type: table
   fields: [title, subtitle, date]
   sort: "date"
@@ -20,6 +21,9 @@ and building toward training with backpropagation.
   the common activation functions, and softmax for classification. Comes with a
   [NumPy notebook](forward-propagation/demo.ipynb) that draws the layer in 2D and 3D
   and plots every activation with its derivative.
+- **[Depth, Width, and Activation — A Controlled Study](architecture-study/index.ipynb)** —
+  changing one factor at a time to see how it shapes a network's output, first with
+  random (untrained) weights and then after training on the same curve.
 - *Backpropagation (computing the gradients layer by layer)* — planned.
 - *Training in practice (initialization, optimizers, regularization)* — planned.
 

@@ -54,6 +54,8 @@ website:
                 contents:
                   - text: "NumPy demo (from scratch)"
                     href: notes/neural-networks/forward-propagation/demo.ipynb
+              - text: "Depth, width & activation study"
+                href: notes/neural-networks/architecture-study/index.ipynb
   page-footer:
     center: |
       Notes from CMU
