@@ -42,9 +42,9 @@ $$
 a_{2,j} = \sum_{i=1}^{4} w_{j,i}\, f(a_{1,i}), \qquad j = 1, 2, 3.
 $$
 
-The same graph in 3D, with each layer in its own plane, makes the **fully
-connected** structure obvious: every node in one plane talks to every node in the
-next. All edges into one layer-2 node share a color — those are exactly the
+The same graph in 3D, with layer 1 laid out as a row and layer 2 as a column,
+makes the **fully connected** structure obvious: every node in the row talks to
+every node in the column. All edges into one layer-2 node share a color — those are exactly the
 weights $w_{j,1}, \dots, w_{j,4}$ in that node's sum.
 
 {{< embed demo.ipynb#fig-network-3d >}}
