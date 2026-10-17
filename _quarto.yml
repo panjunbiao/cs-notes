@@ -19,6 +19,8 @@ website:
             text: Logistic Regression
           - href: notes/support-vector-machine/index.qmd
             text: Support Vector Machine
+          - href: notes/neural-networks/index.qmd
+            text: Neural Networks
     right:
       - icon: github
         href: https://github.com/panjunbiao/cs-notes
@@ -44,6 +46,14 @@ website:
                 href: notes/support-vector-machine/hard-margin-linear/index.qmd
               - text: "Kernels: a visual tour"
                 href: notes/support-vector-machine/kernel-boundaries/index.ipynb
+          - section: "Neural Networks"
+            href: notes/neural-networks/index.qmd
+            contents:
+              - section: "Forward Propagation & Activations"
+                href: notes/neural-networks/forward-propagation/index.qmd
+                contents:
+                  - text: "NumPy demo (from scratch)"
+                    href: notes/neural-networks/forward-propagation/demo.ipynb
   page-footer:
     center: |
       Notes from CMU

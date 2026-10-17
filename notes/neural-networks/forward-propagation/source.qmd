@@ -1,0 +1,174 @@
+---
+title: "Forward Propagation & Activation Functions — Original Notes"
+subtitle: "Verbatim transcription of my handwritten notes (mistakes preserved)"
+date: 2026-10-17
+search: false
+---
+
+::: {.callout-note appearance="simple"}
+This is a faithful, verbatim transcription of my **original handwritten notes** —
+the *source* behind the cleaned note
+[Forward Propagation & Activation Functions](index.qmd). It intentionally preserves
+the original wording, notation, strike-throughs (`~~struck~~`), and any mistakes.
+`[Editorial notes in brackets]` mark spots where the handwriting is ambiguous,
+describe the hand-drawn figures, or flag a known slip.
+
+This page is intentionally left out of the site navigation and is reachable only
+via the link from the cleaned note.
+:::
+
+*[Editorial note: throughout these pages my handwritten $x$ often looks like an
+$r$ or a $\gamma$ (e.g. "$\tanh(r)$", "$(r \geq 0)$"). These are all $x$ and are
+transcribed as $x$.]*
+
+---
+
+## Page 1
+
+The page is split into three panels: **2D.** (top left), **3D View** (top right),
+and **Matrix view.** (bottom).
+
+### 2D.
+
+*[Editorial note — figure: a column of four input nodes labelled $1, 2, 3, 4$
+under the heading $f(a_1)$, and a column of three output nodes labelled
+$1, 2, 3$ under the heading $a_2$. Nodes are drawn as half-discs (flat side facing
+outward). Every input node has an arrow to every output node — 12 arrows in all,
+with the arrowheads at the output nodes. The arrows are labelled as follows:]*
+
+| from input node | to output 1 | to output 2 | to output 3 |
+|:---:|:---:|:---:|:---:|
+| 1 | $w^{(a_2)}_{1,1}$ | $W^{(a_2)}_{2,1}$ | $w_{3,1}$ |
+| 2 | $w_{1,2}$ | $w_{2,2}$ | $w_{3,2}$ |
+| 3 | $w_{1,3}$ | $w_{2,3}$ | $w_{3,3}$ |
+| 4 | $w_{1,4}$ | $w_{2,4}$ | $w_{3,4}$ |
+
+*[Editorial note: only the first two labels carry the superscript $(a_2)$. The
+labels $w_{3,2}$ and $w_{3,3}$ are overwritten (one digit written over another),
+and the labels from nodes 2 and 3 are crowded where the arrows cross, so their
+placement on a particular arrow is my best reading. The arrow labelled $w_{1,3}$
+appears to also carry an arrowhead at input node 3.]*
+
+### 3D View
+
+*[Editorial note — figure: the same layer drawn in perspective. The four input
+nodes $1, 2, 3, 4$ are drawn along a diagonal line receding into the page, and the
+three output nodes $1, 2, 3$ stand on a vertical line at the right. Arrows run
+from each input node to each output node, labelled:]*
+
+| to output node | labels written near the arrowheads |
+|:---:|:---|
+| 1 | $w_{1,4}$, $w_{1,3}$, $w_{1,2}$, $w_{1,1}$ |
+| 2 | $w_{2,4}$, $w_{2,3}$, $w_{2,2}$, $w_{2,1}$ |
+| 3 | $w_{3,3}$, $w_{3,2}$, $w_{3,4}$, $w_{3,1}$ |
+
+*[Editorial note: the arrow labelled $w_{1,4}$ has arrowheads at both ends. The
+four arrows towards output node 3 stop short of the node, ending in small circles
+below and to the left of it.]*
+
+### Matrix view.
+
+$$
+\begin{bmatrix}
+w_{1,1} & w_{1,2} & w_{1,3} & w_{1,4} \\
+w_{2,1} & w_{2,2} & w_{2,3} & w_{2,4} \\
+w_{3,1} & w_{3,2} & w_{3,3} & w_{3,4}
+\end{bmatrix}
+$$
+
+---
+
+## Page 2
+
+classification Softmax Function
+
+$$
+\sigma(\vec{a})_i = \frac{\exp(a_i)}{\sum_{j=1}^{k} \exp(a_j)}
+$$
+
+*[Editorial note: the subscript inside the denominator's $\exp(\cdot)$ is hard to
+read; it could be $a_i$ or $a_j$. The sum runs over $j$, so $a_j$ is the sensible
+reading.]*
+
+outputs sum to 1
+
+can be viewed as probabilites.
+
+---
+
+Activation Functions.
+
+Sigmoid: $\quad \sigma(x) = \dfrac{1}{1 + \exp(-x)}$
+
+Tanh: $\quad \tanh(x) = \dfrac{\exp(x) - \exp(-x)}{\exp(x) + \exp(-x)}$
+
+Linear : $\quad f(x) = kx.$
+
+Step function:
+
+*[Editorial note — figure: a small plot with the vertical axis marked $1$ (top)
+and $0$ (bottom). The curve runs flat along $0$, jumps straight up to $1$ a little
+right of the middle of the box, and stays flat at $1$.]*
+
+Logic Threshold Function:
+
+*[Editorial note — figure: a small plot with the vertical axis marked $4$ (top),
+$0$ (middle, with a dashed horizontal line), and $-4$ (bottom). The curve is flat
+at $-4$ on the left, rises as a straight ramp through the middle, and is flat
+(slightly rising) at $4$ on the right. No formula is written.]*
+
+---
+
+## Page 3
+
+Softmax activation function.
+
+$$
+S(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^{k} \exp(x_j)}
+$$
+
+---
+
+ReLU Activation Function
+
+$$
+\text{ReLU}(x) = \begin{cases} 0 & (x < 0) \\ x & (x \geq 0) \end{cases}
+$$
+
+*[Editorial note — figure: a plot with $0$ marked on the vertical axis; the curve
+is flat at $0$ on the left, then a straight ramp up to the right.]*
+
+---
+
+Leaky ReLU
+
+$$
+\text{Leaky ReLU}(x) = \begin{cases} c \cdot x & (x < 0) \\ x & (x \geq 0) \end{cases}
+$$
+
+~~Leaky ReLU(x)~~ -
+
+*[Editorial note — figure: a plot with $0$ marked on the vertical axis (a dot on
+the axis at $0$). The curve rises with a small slope on the left — passing just
+below the $0$ level — to a kink, then rises steeply on the right.]*
+
+---
+
+ELU: $\quad$ ELU$(x) = \begin{cases} \alpha \cdot (\exp(x) - 1) & (x < 0) \\ x & (x \geq 0) \end{cases}$
+
+---
+
+GELU.
+
+$$
+\text{GELU}(x) = x \cdot \phi(x). \quad \big(\, \phi(x) = 0.5\,(1 + \operatorname{erf}(x/\sqrt{2}))\,\big)
+$$
+
+*[Editorial note: written with a lowercase-looking $\phi$. The function
+$0.5\,(1 + \operatorname{erf}(x/\sqrt2))$ is the standard normal **CDF**, usually
+written with a capital $\Phi$; lowercase $\varphi$ normally denotes the density.]*
+
+---
+
+← Back to the cleaned note:
+[Forward Propagation & Activation Functions](index.qmd).

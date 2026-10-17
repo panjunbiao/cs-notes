@@ -1,0 +1,173 @@
+---
+title: "Forward Propagation & Activation Functions"
+subtitle: "One fully connected layer as a graph and as a matrix, and the activation functions that make a network non-linear"
+date: 2026-10-17
+categories: [machine learning, neural networks, forward propagation, activation functions]
+---
+
+::: {.callout-note appearance="simple"}
+This is the first note in the [Neural Networks](../index.qmd) module. It covers
+the **forward pass** through a single fully connected layer — drawn as a graph and
+written as a matrix — and the **activation functions** applied at each node,
+ending with **softmax** for classification.
+
+🧪 The figures here come from a companion
+[NumPy notebook](demo.ipynb), which also computes a forward pass by hand.
+
+📄 Prefer the raw version? See my [original notes](source.qmd) — a verbatim
+transcription of the handwritten pages, mistakes and all.
+:::
+
+## One layer: 4 nodes → 3 nodes
+
+Take two consecutive layers: layer 1 has 4 nodes and layer 2 has 3. Layer 1's
+nodes output $f(a_{1,1}), \dots, f(a_{1,4})$ — their pre-activations $a_{1,i}$ passed
+through an activation function $f$. Every layer-1 node connects to every layer-2
+node, and each connection carries one weight:
+
+> $w_{j,i}$ is the weight on the edge **into** layer-2 node $j$ **from** layer-1
+> node $i$.
+
+So there are $4 \times 3 = 12$ weights. (In my handwritten notes I tagged the first
+couple of weights with a superscript, $w^{(a_2)}_{1,1}$, to say which layer they
+feed. Within a single layer that tag is the same for every weight, so I drop it
+here; with several layers I'd write $W^{(2)}, W^{(3)}, \dots$ instead.)
+
+{{< embed demo.ipynb#fig-network-2d >}}
+
+Each layer-2 node simply adds up its incoming edges — each layer-1 output scaled
+by its weight:
+
+$$
+a_{2,j} = \sum_{i=1}^{4} w_{j,i}\, f(a_{1,i}), \qquad j = 1, 2, 3.
+$$
+
+The same graph in 3D, with each layer in its own plane, makes the **fully
+connected** structure obvious: every node in one plane talks to every node in the
+next. All edges into one layer-2 node share a color — those are exactly the
+weights $w_{j,1}, \dots, w_{j,4}$ in that node's sum.
+
+{{< embed demo.ipynb#fig-network-3d >}}
+
+## The matrix view
+
+Stacking the weights so that **row $j$ holds all the weights into node $j$** turns
+the three sums into one matrix–vector product:
+
+$$
+W = \begin{bmatrix}
+w_{1,1} & w_{1,2} & w_{1,3} & w_{1,4} \\
+w_{2,1} & w_{2,2} & w_{2,3} & w_{2,4} \\
+w_{3,1} & w_{3,2} & w_{3,3} & w_{3,4}
+\end{bmatrix},
+\qquad
+\boxed{\;\underbrace{\mathbf{a}_2}_{3\times1} = \underbrace{W}_{3\times4}\;\underbrace{f(\mathbf{a}_1)}_{4\times1}\;}
+$$
+
+This is why the index order is **destination first, source second**: row $j$ of
+$W$ dotted with $f(\mathbf{a}_1)$ is exactly the sum for node $j$. The matrix has one
+row per node in the *next* layer and one column per node in the *previous* layer.
+In the notebook I compute $\mathbf{a}_2$ both ways — looping over the 12 edges and
+using `W @ f(a1)` — and they agree.
+
+{{< embed demo.ipynb#fig-weight-matrix >}}
+
+::: {.callout-note title="What my notes leave out: the bias"}
+In practice each node also adds a bias, so the layer is
+$\mathbf{a}_2 = W f(\mathbf{a}_1) + \mathbf{b}$ with $\mathbf{b} \in \mathbb{R}^3$.
+As in [logistic regression](../../logistic-regression/two-class-linear/index.qmd)
+(where $w_0$ multiplies a constant feature $1$), the bias can be folded into $W$ by
+adding a 5th layer-1 "node" that always outputs $1$ and making $\mathbf{b}$ a 5th
+column of $W$.
+:::
+
+## Forward propagation through many layers
+
+A deeper network just repeats this step. With the input $\mathbf{x}$ playing the
+role of layer 0's output,
+
+$$
+\mathbf{a}^{(1)} = W^{(1)} \mathbf{x} + \mathbf{b}^{(1)}, \qquad
+\mathbf{a}^{(l)} = W^{(l)} f\big(\mathbf{a}^{(l-1)}\big) + \mathbf{b}^{(l)}, \qquad
+\hat{\mathbf{y}} = \sigma\big(\mathbf{a}^{(L)}\big),
+$$
+
+where the last layer uses softmax $\sigma$ (below) for classification. *Forward
+propagation* is just evaluating this chain from input to output: alternate a
+linear map (the weights) with an element-wise non-linearity (the activation).
+
+## Activation functions
+
+Why bother with $f$ at all? Without it, two layers give
+$W^{(2)}\big(W^{(1)}\mathbf{x}\big) = \big(W^{(2)}W^{(1)}\big)\mathbf{x}$ — a single
+linear map, so depth would add nothing. The activation is what makes a network
+**non-linear**. It is applied **element-wise**, one node at a time.
+
+| Name | $f(x)$ | Notes |
+|---|---|---|
+| Sigmoid | $\sigma(x) = \dfrac{1}{1+e^{-x}}$ | output in $(0, 1)$; saturates at both ends |
+| Tanh | $\tanh x = \dfrac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$ | output in $(-1, 1)$; zero-centered |
+| Linear | $kx$ | no non-linearity (used at regression outputs) |
+| Step | $1$ if $x \ge 0$, else $0$ | the classic perceptron; zero gradient |
+| Saturating linear ("logic threshold") | $\min\!\big(\max(x, -L), L\big)$ | linear in the middle, flat beyond $\pm L$ |
+| ReLU | $\max(0, x)$ | the modern default for hidden layers |
+| Leaky ReLU | $x$ if $x \ge 0$, else $c\,x$ | small slope $c$ (e.g. $0.01$) for $x<0$ |
+| ELU | $x$ if $x \ge 0$, else $\alpha\,(e^{x}-1)$ | smooth; tends to $-\alpha$ (often $\alpha = 1$) |
+| GELU | $x\,\Phi(x)$, $\;\Phi(x) = \tfrac12\big(1+\operatorname{erf}(x/\sqrt2)\big)$ | smooth ReLU; used in Transformers |
+
+A few clarifications on what I wrote by hand:
+
+- **Step:** my sketch put the jump a little right of center. The jump is at
+  $x = 0$; a threshold $\theta$ (which the bias provides) shifts it to $x = \theta$.
+- **Logic threshold:** I sketched it without a formula, flat at $-4$ and $4$ with
+  a ramp in between, so I've written it as the saturating linear function with
+  $L = 4$. I'm not sure the $\pm4$ is standard — the common version, *hard tanh*,
+  uses $L = 1$.
+- **GELU:** $\Phi$ is the standard normal **CDF** (capital $\Phi$; I wrote a
+  lowercase $\phi$, which usually means the density).
+
+{{< embed demo.ipynb#fig-activations >}}
+
+The dashed curves are the derivatives, which training (backpropagation) relies on:
+
+- **Sigmoid and tanh flatten out** away from 0, so their derivatives vanish there
+  — through many layers this causes *vanishing gradients*.
+- **Step has zero derivative** everywhere it's defined, so gradient descent gets
+  no signal through it; the saturating linear function has the same problem once
+  it saturates.
+- **ReLU** keeps a slope of 1 for $x > 0$ but is exactly flat for $x < 0$ (a node
+  stuck there stops learning). **Leaky ReLU**, **ELU**, and **GELU** all keep some
+  signal for $x < 0$.
+
+## Softmax for classification
+
+For a classifier with $k$ classes, the output layer uses **softmax**:
+
+$$
+\sigma(\mathbf{a})_i = \frac{e^{a_i}}{\sum_{j=1}^{k} e^{a_j}}, \qquad i = 1, \dots, k.
+$$
+
+(I wrote this formula twice in my notes, once as the "classification softmax
+function" and once as the "softmax activation function" — it's the same function.)
+
+- **Outputs are positive and sum to 1**, so they can be viewed as class
+  probabilities; the prediction is the class with the largest one.
+- **Not element-wise:** unlike the activations above, each output depends on
+  *all* the $a_j$ through the denominator.
+- **Shift-invariant:** adding the same constant to every $a_i$ changes nothing
+  ($e^{c}$ cancels), so implementations subtract $\max_j a_j$ first to avoid
+  overflow.
+- **Two classes reduce to the sigmoid:**
+  $\sigma(\mathbf{a})_1 = \dfrac{e^{a_1}}{e^{a_1} + e^{a_2}} = \dfrac{1}{1 + e^{-(a_1 - a_2)}}$,
+  which is the logistic-regression output.
+
+{{< embed demo.ipynb#fig-softmax >}}
+
+## Acknowledgment
+
+These notes are based on my work for **24-887 — Machine Learning & Artificial
+Intelligence for Engineers**, taught by Professor Levent Burak Kara as part of
+Carnegie Mellon University's
+[AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+graduate certificate. All credit for the course material goes to the instructor and
+CMU; any errors in these notes are my own.

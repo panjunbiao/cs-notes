@@ -1,0 +1,29 @@
+---
+title: "Neural Networks"
+subtitle: "From one fully connected layer to training deep networks"
+listing:
+  contents:
+    - forward-propagation/index.qmd
+    - forward-propagation/demo.ipynb
+  type: table
+  fields: [title, subtitle, date]
+  sort: "date"
+---
+
+Notes on neural networks, starting with how a single layer computes its output
+and building toward training with backpropagation.
+
+## Topics in this module
+
+- **[Forward Propagation & Activation Functions](forward-propagation/index.qmd)** —
+  one fully connected layer as a graph and as a matrix ($\mathbf{a}_2 = W f(\mathbf{a}_1)$),
+  the common activation functions, and softmax for classification. Comes with a
+  [NumPy notebook](forward-propagation/demo.ipynb) that draws the layer in 2D and 3D
+  and plots every activation with its derivative.
+- *Backpropagation (computing the gradients layer by layer)* — planned.
+- *Training in practice (initialization, optimizers, regularization)* — planned.
+
+::: {.callout-note appearance="simple"}
+Items marked *planned* are placeholders for notes I'll add as I work through the
+course.
+:::
