@@ -6,6 +6,7 @@ listing:
     - forward-propagation/index.qmd
     - forward-propagation/demo.ipynb
     - architecture-study/index.ipynb
+    - weights-study/index.ipynb
   type: table
   fields: [title, subtitle, date]
   sort: "date"
@@ -24,6 +25,9 @@ and building toward training with backpropagation.
 - **[Depth, Width, and Activation — A Controlled Study](architecture-study/index.ipynb)** —
   changing one factor at a time to see how it shapes a network's output, first with
   random (untrained) weights and then after training on the same curve.
+- **[What Do the Weights Mean?](weights-study/index.ipynb)** — reading a layer's
+  weight matrix: hidden nodes as boundary pieces for 2D classification, and as
+  templates for images built from known strokes — and when that intuition breaks down.
 - *Backpropagation (computing the gradients layer by layer)* — planned.
 - *Training in practice (initialization, optimizers, regularization)* — planned.
 
