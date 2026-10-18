@@ -1,0 +1,114 @@
+---
+title: "Calculus I — Quick Reference"
+subtitle: "Limit laws, special limits, continuity, and derivative rules on one page"
+date: 2026-10-18
+categories: [mathematics, calculus, reference]
+toc: false
+---
+
+::: {.callout-note appearance="simple"}
+A one-page summary of [Chapter 1 — Limits](../limits/index.qmd) and
+[Chapter 2 — Derivatives](../derivatives/index.qmd) for quick lookup. Numbers in
+brackets point to the full statement in *APEX Calculus*. Throughout,
+$\lim_{x\to c} f(x) = L$ and $\lim_{x\to c} g(x) = K$.
+:::
+
+## Limits
+
+::: {layout-ncol=2}
+
+| Limit law [1.3.1] | |
+|---|---|
+| Constant, identity | $\lim b = b,\;\; \lim x = c$ |
+| Sum / difference | $\lim (f \pm g) = L \pm K$ |
+| Scalar multiple | $\lim b f = bL$ |
+| Product | $\lim f g = LK$ |
+| Quotient | $\lim f/g = L/K \;\; (K \neq 0)$ |
+| Power | $\lim f^n = L^n$ |
+| Root | $\lim \sqrt[n]{f} = \sqrt[n]{L} \;\;$ ($n$ odd or $L \geq 0$) |
+| Composition [1.3.2] | $\lim g(f(x)) = g(L)$ if $g$ is continuous at $L$ |
+
+| Special limits [1.3.6] | |
+|---|---|
+| $\displaystyle\lim_{x\to 0} \frac{\sin x}{x}$ | $1$ |
+| $\displaystyle\lim_{x\to 0} \frac{\cos x - 1}{x}$ | $0$ |
+| $\displaystyle\lim_{x\to 0} (1 + x)^{1/x}$ | $e$ |
+| $\displaystyle\lim_{x\to 0} \frac{e^x - 1}{x}$ | $1$ |
+| $\displaystyle\lim_{x\to\pm\infty} \frac{1}{x^n}$ [1.5.1] | $0 \;\; (n > 0)$ |
+
+:::
+
+**Direct substitution.** For polynomials, rational functions (denominator $\neq 0$),
+$\sin, \cos, \tan, \csc, \sec, \cot, a^x, \ln x, \sqrt[n]{x}$:
+$\lim_{x\to c} f(x) = f(c)$ for $c$ in the domain [1.3.3, 1.3.4]. If $f = g$
+except at $c$, they have the same limit at $c$ [1.3.7].
+
+**Rational functions at $\pm\infty$** [Key Idea 1.5.2], with
+$f(x) = \dfrac{a_n x^n + \cdots + a_0}{b_m x^m + \cdots + b_0}$:
+
+| Degrees | $\lim_{x\to\pm\infty} f(x)$ |
+|---|---|
+| $n = m$ (same degree) | $a_n / b_m$ |
+| $n < m$ (bottom-heavy) | $0$ |
+| $n > m$ (top-heavy) | infinite |
+
+| Concept | Condition |
+|---|---|
+| Two-sided limit exists [1.4.1] | $\lim_{x\to c^-} f = \lim_{x\to c^+} f = L$ |
+| Vertical asymptote at $x = c$ [1.5.2] | a limit (one- or two-sided) at $c$ is $\pm\infty$ |
+| Horizontal asymptote at $y = L$ [1.5.4] | $\lim_{x\to\infty} f = L$ or $\lim_{x\to-\infty} f = L$ |
+
+## Continuity
+
+| | |
+|---|---|
+| Continuous at $c$ [1.6.1] | $\lim_{x\to c} f(x) = f(c)$ |
+| Continuous on $[a, b]$ [1.6.3] | continuous on $(a, b)$, right continuous at $a$, left continuous at $b$ |
+| Stays continuous [1.6.1, 1.6.2] | $f \pm g$, $cf$, $fg$, $f/g$ ($g \neq 0$), $f^n$, $\sqrt[n]{f}$, and compositions $g \circ f$ |
+| Intermediate Value Theorem [1.6.4] | $f$ continuous on $[a, b]$, $y$ between $f(a)$ and $f(b)$ $\Rightarrow$ $f(c) = y$ for some $c \in (a, b)$ |
+
+## Derivatives
+
+$$
+f'(x) = \lim_{h\to 0} \frac{f(x + h) - f(x)}{h}
+\qquad
+f'(x) = y' = \frac{dy}{dx} = \frac{df}{dx}
+\qquad
+\text{tangent at } c:\; \ell(x) = f'(c)(x - c) + f(c)
+$$
+
+Position $s(t)$ → velocity $s'(t)$ → acceleration $s''(t)$ [Key Idea 2.2.1].
+
+::: {layout-ncol=2}
+
+| Rule | Formula |
+|---|---|
+| Constant [2.3.1] | $(c)' = 0$ |
+| Power [2.3.1] | $(x^n)' = n x^{n-1}$ |
+| Constant multiple [2.3.2] | $(cf)' = c f'$ |
+| Sum / difference [2.3.2] | $(f \pm g)' = f' \pm g'$ |
+| Product [2.4.1] | $(fg)' = f g' + f' g$ |
+| Quotient [2.4.2] | $\left(\dfrac{f}{g}\right)' = \dfrac{g f' - f g'}{g^2}$ |
+| Chain [2.5.1] | $\big(f(g(x))\big)' = f'(g(x))\, g'(x)$ |
+| Generalized power [2.5.2] | $\big(g(x)^n\big)' = n\, g(x)^{n-1} g'(x)$ |
+
+| $f(x)$ | $f'(x)$ [2.6.1] |
+|---|---|
+| $e^x$ | $e^x$ |
+| $\ln x$ | $1/x$ |
+| $\sin x$ | $\cos x$ |
+| $\cos x$ | $-\sin x$ |
+| $\tan x$ | $\sec^2 x$ |
+| $\cot x$ | $-\csc^2 x$ |
+| $\sec x$ | $\sec x \tan x$ |
+| $\csc x$ | $-\csc x \cot x$ |
+
+:::
+
+---
+
+Summarized from Gregory Hartman et al., ***APEX Calculus*** (UND 2025 edition;
+© 2015 Gregory Hartman, © 2025 Department of Mathematics, University of North
+Dakota), used under
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). The condensed
+layout and wording are mine.

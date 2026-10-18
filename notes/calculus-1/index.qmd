@@ -1,0 +1,52 @@
+---
+title: "Calculus I (UND Math 165)"
+subtitle: "Key definitions, theorems, and rules for limits, derivatives, and integrals"
+listing:
+  contents:
+    - limits/index.qmd
+    - derivatives/index.qmd
+    - quick-reference/index.qmd
+  type: table
+  fields: [title, subtitle, date]
+  sort: false
+---
+
+Reference notes for **Math 165: Calculus I** at the
+[University of North Dakota](https://und.edu/academics/online/enroll-anytime/math165.html),
+which I'm taking to build a solid math foundation for computer science, machine
+learning, and AI. Derivatives in particular are everywhere in machine learning:
+gradient descent and backpropagation are built on them.
+
+These pages collect the **definitions, theorems, and key ideas** I want to
+memorize and look up later, retyped from the course textbook with its numbering
+kept, so each box can be matched with the book.
+
+## Topics in this module
+
+- **[Chapter 1 — Limits](limits/index.qmd)** — the ε–δ definition, limit laws and
+  special limits, one-sided and infinite limits, asymptotes, and continuity
+  (§1.0–1.6).
+- **[Chapter 2 — Derivatives](derivatives/index.qmd)** — the derivative and its
+  notation, differentiation rules, higher-order derivatives, and the chain rule
+  (§2.0–2.6 so far).
+- **[Quick reference](quick-reference/index.qmd)** — limit laws, special limits,
+  continuity, and derivative rules on one page.
+- *Chapter 3 — The Graphical Behavior of Functions (extreme values, the Mean
+  Value Theorem, curve sketching)* — planned.
+- *Chapters 4–5 — Applications of derivatives, and integration* — planned.
+
+::: {.callout-note appearance="simple"}
+Items marked *planned* are placeholders for notes I'll add as I work through the
+course.
+:::
+
+## Textbook and license
+
+The course uses ***APEX Calculus*** by Gregory Hartman et al., as adapted by the
+Department of Mathematics, University of North Dakota (2025 edition):
+© 2015 Gregory Hartman, © 2025 Department of Mathematics, University of North
+Dakota, licensed under the
+[Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+The statements on these pages are reproduced from it under that license; the
+selection, formatting, and any "My note" additions are mine, and so are any
+errors.

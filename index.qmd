@@ -1,18 +1,20 @@
 ---
 title: "CS Notes"
-subtitle: "Learning notes from CMU 24-887 — Machine Learning & AI for Engineers"
+subtitle: "Learning notes on machine learning, AI, and the math behind them"
 ---
 
 Welcome! This is my personal, evolving set of notes taken while working through
 Carnegie Mellon University's
 [AI Engineering Fundamentals graduate certificate](https://www.cmu.edu/online/ai-engineering-fundamentals),
-starting with course **24-887 — Machine Learning & AI for Engineers**.
+starting with course **24-887 — Machine Learning & AI for Engineers**, and
+[Calculus I at the University of North Dakota](https://und.edu/academics/online/enroll-anytime/math165.html)
+to strengthen the math foundation underneath.
 
 I write these notes mostly to understand things more deeply (e.g. deriving the
 gradient-descent update rules by hand, even though real projects would just use a
 library) and to keep a searchable refresher for my future self.
 
-## Notes
+## Machine learning
 
 - [Logistic Regression](notes/logistic-regression/index.qmd) — binary, multi-class,
   and non-linear classification, starting from deriving gradient descent by hand.
@@ -21,12 +23,24 @@ library) and to keep a searchable refresher for my future self.
 - [Neural Networks](notes/neural-networks/index.qmd) — forward propagation through a
   fully connected layer, activation functions, and softmax.
 
+## Mathematics
+
+- [Calculus I (UND Math 165)](notes/calculus-1/index.qmd) — key definitions,
+  theorems, and rules for limits and derivatives, plus a one-page quick reference.
+
 ## Credit
 
-Course material and problem framing are from CMU's **24-887 — Machine Learning &
-Artificial Intelligence for Engineers** (instructor: Professor Levent Burak Kara), part
-of the [AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
-graduate certificate. These are my own study notes; any errors are mine.
+- **Machine learning notes:** course material and problem framing are from CMU's
+  **24-887 — Machine Learning & Artificial Intelligence for Engineers** (instructor:
+  Professor Levent Burak Kara), part of the
+  [AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+  graduate certificate.
+- **Calculus notes:** definitions and theorems are reproduced from *APEX Calculus*
+  (© 2015 Gregory Hartman, © 2025 Department of Mathematics, University of North
+  Dakota) under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), for
+  UND's Math 165: Calculus I.
+
+These are my own study notes; any errors are mine.
 
 ::: {.callout-note}
 These notes are the *source*. The site you're reading is rendered automatically

@@ -4,7 +4,7 @@ project:
 
 website:
   title: "CS Notes"
-  description: "Personal notes from CMU 24-887 Machine Learning & AI for Engineers, and beyond."
+  description: "Personal study notes on machine learning, AI, and the math behind them."
   site-url: "https://panjunbiao.github.io/cs-notes"
   repo-url: "https://github.com/panjunbiao/cs-notes"
   repo-actions: [source, edit, issue]
@@ -21,6 +21,9 @@ website:
             text: Support Vector Machine
           - href: notes/neural-networks/index.qmd
             text: Neural Networks
+          - text: "---"
+          - href: notes/calculus-1/index.qmd
+            text: Calculus I
     right:
       - icon: github
         href: https://github.com/panjunbiao/cs-notes
@@ -58,11 +61,20 @@ website:
                 href: notes/neural-networks/architecture-study/index.ipynb
               - text: "What do the weights mean?"
                 href: notes/neural-networks/weights-study/index.ipynb
+      - section: "Mathematics"
+        contents:
+          - section: "Calculus I (UND Math 165)"
+            href: notes/calculus-1/index.qmd
+            contents:
+              - text: "Chapter 1 — Limits"
+                href: notes/calculus-1/limits/index.qmd
+              - text: "Chapter 2 — Derivatives"
+                href: notes/calculus-1/derivatives/index.qmd
+              - text: "Quick reference"
+                href: notes/calculus-1/quick-reference/index.qmd
   page-footer:
     center: |
-      Notes from CMU
-      [24-887 Machine Learning & AI for Engineers](https://www.cmu.edu/online/ai-engineering-fundamentals).
-      Content credit: the instructor and Carnegie Mellon University.
+      Personal study notes. Course and textbook credits are given on each page.
 
 format:
   html:
