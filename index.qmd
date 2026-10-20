@@ -10,6 +10,10 @@ starting with course **24-887 — Machine Learning & AI for Engineers**, and
 [Calculus I at the University of North Dakota](https://und.edu/academics/online/enroll-anytime/math165.html)
 to strengthen the math foundation underneath.
 
+These courses are part of my preparation for a **Master of Science in Computer
+Science**. The full plan — four tracks covering computer science, applied AI, math
+foundations, and applied math — is on the [Learning Path](learning-path.qmd) page.
+
 I write these notes mostly to understand things more deeply (e.g. deriving the
 gradient-descent update rules by hand, even though real projects would just use a
 library) and to keep a searchable refresher for my future self.

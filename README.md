@@ -1,8 +1,25 @@
 # cs-notes
 
-Personal learning notes from Carnegie Mellon University's
-[AI Engineering Fundamentals graduate certificate](https://www.cmu.edu/online/ai-engineering-fundamentals),
-starting with course **24-887 — Machine Learning & AI for Engineers**.
+Personal learning notes from my preparation for a **Master of Science in Computer
+Science (MSCS)**. I'm following four parallel tracks:
+
+1. **Computer science:** Stanford's
+   [Foundations in Computer Science Graduate Certificate](https://online.stanford.edu/programs/foundations-computer-science-graduate-certificate):
+   CS107 (completed), then CS161, CS103, and CS111.
+2. **Applied AI:** CMU's
+   [AI Engineering Fundamentals Graduate Certificate](https://www.cmu.edu/online/ai-engineering-fundamentals),
+   starting with 24-887 — Machine Learning & AI for Engineers (in progress).
+3. **Math foundations:** UND's Enroll Anytime courses: Math 165 Calculus I (in
+   progress), then Math 166 Calculus II, Math 265 Calculus III, and Math 208 Discrete
+   Mathematics.
+4. **Applied math for CS:** IU's
+   [Undergraduate Certificate in Applied Mathematics](https://online.iu.edu/degrees/applied-mathematics.html):
+   MATH-M 303, M 313, M 371, M 447, and the elective M 463.
+
+The full plan, with links, status, and how the tracks connect, is on the
+[Learning Path](https://panjunbiao.github.io/cs-notes/learning-path.html) page
+(source: [`learning-path.qmd`](learning-path.qmd)). It's my personal plan, shared
+as a reference for anyone pursuing a similar path.
 
 The notes are the *source of truth*; the published website is rendered from them
 with [Quarto](https://quarto.org) and deployed to GitHub Pages by CI — so the

@@ -1,0 +1,146 @@
+---
+title: "My Learning Path Toward an MS in Computer Science"
+subtitle: "Four parallel tracks — computer science, applied AI, math foundations, and applied math — and where I am on each"
+date: 2026-09-17
+date-modified: 2026-09-17
+---
+
+I'm preparing for a **Master of Science in Computer Science (MSCS)**. Rather than
+jumping straight in, I'm building the foundation in four parallel tracks, all taken
+online while working. This page keeps track of the plan for me, and it may serve as
+a reference for anyone considering a similar path.
+
+**Status key:** ✅ completed · 🟡 in progress · ⬜ planned
+
+## At a glance
+
+| Track | Program | Status |
+|---|---|---|
+| 1. Computer science | Stanford — Foundations in Computer Science Graduate Certificate | 1 of 4 courses done |
+| 2. Applied AI | Carnegie Mellon — AI Engineering Fundamentals Graduate Certificate | first course in progress |
+| 3. Math foundations | University of North Dakota — calculus and discrete math courses | first course in progress |
+| 4. Applied math for CS | Indiana University — Undergraduate Certificate in Applied Mathematics | planned |
+
+## 1. Computer science track — Stanford
+
+**Program:** [Foundations in Computer Science Graduate Certificate](https://online.stanford.edu/programs/foundations-computer-science-graduate-certificate),
+Stanford Online. The core undergraduate CS sequence (systems, theory, algorithms,
+and operating systems) that an MSCS program builds on. I'm taking the courses one at
+a time, in this order:
+
+| # | Course | Topic | Status |
+|---|---|---|---|
+| 1 | [CS107 — Computer Organization and Systems](https://online.stanford.edu/courses/cs107-computer-organization-and-systems) | how programs run on the machine: C, memory, data representation, assembly | ✅ completed |
+| 2 | [CS161 — Design and Analysis of Algorithms](https://online.stanford.edu/courses/cs161-design-and-analysis-algorithms) | algorithm design paradigms and complexity analysis | ⬜ next |
+| 3 | [CS103 — Mathematical Foundations of Computing](https://online.stanford.edu/courses/cs103-mathematical-foundations-computing) | proofs, discrete math, and the theory of computation | ⬜ planned |
+| 4 | [CS111 — Operating Systems Principles](https://online.stanford.edu/courses/cs111-operating-systems-principles) | processes, concurrency, memory, and file systems | ⬜ planned |
+
+## 2. Applied AI track — Carnegie Mellon
+
+**Program:** [AI Engineering Fundamentals Graduate Certificate](https://www.cmu.edu/online/ai-engineering-fundamentals),
+CMU College of Engineering. Graduate-level machine learning and deep learning,
+taught in live online classes. It prepares me for graduate AI coursework and is
+directly useful in my job.
+
+| # | Course | Topic | Status |
+|---|---|---|---|
+| 1 | 24-887 — Machine Learning & Artificial Intelligence for Engineers | supervised and unsupervised learning, model selection and optimization, introduction to deep learning | 🟡 in progress |
+| 2 | 24-888 — Introduction to Deep Learning | CNNs, RNNs/LSTMs, GANs, applied to engineering problems | ⬜ planned |
+
+My notes for this track: [Logistic Regression](notes/logistic-regression/index.qmd),
+[Support Vector Machine](notes/support-vector-machine/index.qmd), and
+[Neural Networks](notes/neural-networks/index.qmd).
+
+## 3. Math foundations track — University of North Dakota
+
+**Program:** individual self-paced [Enroll Anytime](https://und.edu/academics/online/enroll-anytime/math165.html)
+courses from UND (not a certificate). The calculus sequence plus discrete
+mathematics — the math that both the CS courses and the applied-math certificate
+below assume.
+
+| # | Course | Credits | Topic | Prerequisite | Status |
+|---|---|---|---|---|---|
+| 1 | [Math 165 — Calculus I](https://und.edu/academics/online/enroll-anytime/math165.html) | 4 | limits, derivatives, integrals and their applications | placement or Math 107 | 🟡 in progress |
+| 2 | [Math 166 — Calculus II](https://und.edu/academics/online/enroll-anytime/math166.html) | 4 | integration techniques, sequences and series, Taylor polynomials, parametric and polar curves | Math 165 | ⬜ planned |
+| 3 | [Math 265 — Calculus III](https://und.edu/academics/online/enroll-anytime/math265.html) | 4 | multivariable calculus: partial derivatives, gradients, multiple integrals, vector calculus | Math 166 | ⬜ planned |
+| 4 | [Math 208 — Discrete Mathematics](https://und.edu/academics/online/enroll-anytime/math208.html) | 3 | logic, proofs, induction, number theory, counting, recurrence relations | placement or Math 103/107/146/165 | ⬜ planned |
+
+My notes for this track: [Calculus I (UND Math 165)](notes/calculus-1/index.qmd).
+
+## 4. Applied math for computer science track — Indiana University
+
+**Program:** [Undergraduate Certificate in Applied Mathematics](https://online.iu.edu/degrees/applied-mathematics.html),
+IU Online (15 credits: four core courses plus one elective, 3 credits each). It goes
+beyond calculus into the math used most in CS and machine learning: linear algebra,
+differential equations, numerical methods, modeling, and probability. Calculus I–III
+are prerequisites, which track 3 covers.
+
+| # | Course | Role | Topic | Status |
+|---|---|---|---|---|
+| 1 | MATH-M 303 — Linear Algebra for Undergraduates | core | vectors, matrices, linear maps, eigenvalues | ⬜ planned |
+| 2 | MATH-M 313 — Elementary Differential Equations with Applications | core | ordinary differential equations and their applications | ⬜ planned |
+| 3 | MATH-M 371 — Elementary Computational Methods | core | numerical methods for solving math problems on a computer | ⬜ planned |
+| 4 | MATH-M 447 — Mathematical Models and Applications | core | building and analyzing mathematical models | ⬜ planned |
+| 5 | MATH-M 463 — Introduction to Probability Theory | elective | probability, random variables, distributions | ⬜ planned |
+
+## How the tracks fit together
+
+Arrows mean "is a prerequisite for" (from the course catalogs) or, dashed, "feeds
+into" (my own view of how the material builds up).
+
+```{mermaid}
+flowchart TB
+  subgraph UND["3. Math foundations (UND)"]
+    M165["Math 165<br/>Calculus I"] --> M166["Math 166<br/>Calculus II"] --> M265["Math 265<br/>Calculus III"]
+    M208["Math 208<br/>Discrete Math"]
+  end
+  subgraph IU["4. Applied math (IU)"]
+    M303["M303 Linear Algebra"]
+    M313["M313 Differential Eqs."]
+    M371["M371 Computational Methods"]
+    M447["M447 Math Models"]
+    M463["M463 Probability"]
+  end
+  subgraph SU["1. Computer science (Stanford)"]
+    CS107["CS107 Systems"] --> CS161["CS161 Algorithms"] --> CS103["CS103 Math Foundations"] --> CS111["CS111 Operating Systems"]
+  end
+  subgraph CMU["2. Applied AI (CMU)"]
+    C887["24-887 ML & AI"] --> C888["24-888 Deep Learning"]
+  end
+  M265 --> IU
+  M208 -.-> CS103
+  M208 -.-> CS161
+  M303 -.-> CMU
+  M463 -.-> CMU
+  M265 -.-> CMU
+  CMU -.-> MSCS(["MS in Computer Science"])
+  SU -.-> MSCS
+  IU -.-> MSCS
+  style UND fill:#eef4fb,stroke:#6b8fb8
+  style IU fill:#f3eefa,stroke:#8d74b5
+  style SU fill:#fbeeee,stroke:#b56b6b
+  style CMU fill:#eef8f0,stroke:#5f9e6e
+  classDef default fill:#ffffff,stroke:#555,color:#222
+  style MSCS fill:#fff4d6,stroke:#c49a2c,color:#222
+```
+
+A few connections worth noting:
+
+- **Calculus I → II → III** is a strict chain, and finishing it unlocks the IU
+  certificate.
+- **Discrete math (Math 208)** and **CS103** cover overlapping ground (logic, proofs,
+  induction, counting) from a math and a CS angle. Doing both should make the proofs
+  in **CS161** easier.
+- **Linear algebra, probability, and multivariable calculus** are the math behind
+  machine learning: gradients, matrices of weights, and probabilistic models all
+  show up in the CMU courses.
+
+## For anyone considering a similar path
+
+- This is **my personal plan**, shaped by my background and goals. It isn't advice
+  from any of these schools, and it doesn't guarantee admission anywhere. Check the
+  requirements of the MSCS programs you're interested in.
+- Course details, prerequisites, and availability change. Always confirm on the
+  official program pages linked above.
+- I record what I learn along the way in [these notes](index.qmd), which may help
+  with some of the same courses.
