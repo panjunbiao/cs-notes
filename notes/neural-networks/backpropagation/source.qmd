@@ -1,0 +1,223 @@
+---
+title: "Backpropagation — Original Notes"
+subtitle: "Verbatim transcription of my handwritten notes (mistakes preserved)"
+date: 2026-10-20
+search: false
+---
+
+::: {.callout-note appearance="simple"}
+This is a faithful, verbatim transcription of my **original handwritten notes**,
+the *source* behind the cleaned note
+[Backpropagation](index.qmd). It intentionally preserves
+the original wording, notation, strike-throughs (`~~struck~~`), and any mistakes.
+`[Editorial notes in brackets]` mark spots where the handwriting is ambiguous,
+describe the hand-drawn figures, or flag a known slip.
+
+This page is intentionally left out of the site navigation and is reachable only
+via the link from the cleaned note.
+:::
+
+*[Editorial note: layer indices are written as bracketed superscripts, e.g.
+$x^{[3]}$, $W^{[2]}$. My handwritten $x$ often looks like a $\gamma$ or an $r$;
+these are all $x$ and are transcribed as $x$.]*
+
+---
+
+## Page 1
+
+*[Editorial note — figure: a fully connected network drawn left to right with
+four layers of nodes: **4** input nodes, then **5**, then **3**, then **2** output
+nodes. The input nodes are plain circles; every other node is a circle split by a
+vertical line. Every node in one layer has an arrow to every node in the next.
+The two output nodes each have an arrow leading out to the right. Labels:]*
+
+- *above the gap between layers 0 and 1: $W^{[1]}$; between layers 1 and 2:
+  $W^{[2]}$; between layers 2 and 3: $W^{[3]}$;*
+- *next to the top input node: $x^{[0]}$;*
+- *above the top node of layer 1: $a^{[1]}$ (over the left half), $f^{[1]}$ (with
+  a small arrow pointing at the dividing line), and $x^{[1]}$ (over the right
+  half);*
+- *above the top node of layer 2: $a^{[2]}$, $f^{[2]}$, $x^{[2]}$, in the same
+  arrangement;*
+- *above the top output node: $a^{[3]}$ and $f^{[3]}$, with $x^{[3]}$ written at
+  the end of its outgoing arrow.*
+
+---
+
+Forward:
+
+$$
+\begin{aligned}
+x^{[3]} &= f^{[3]}\big(a^{[3]}\big) \\
+&= f^{[3]}\big(W^{[3]} \times x^{[2]}\big) \\
+&= f^{[3]}\big(W^{[3]} \times f^{[2]}(a^{[2]})\big) \\
+&= f^{[3]}\big(W^{[3]} \cdot f^{[2]}(W^{[2]} \times x^{[1]})\big) \\
+&= f^{[3]}\big(W^{[3]} f^{[2]}(W^{[2]} f^{[1]}(a^{[1]}))\big) \\
+&= f^{[3]}\big(W^{[3]} f^{[2]}(W^{[2]} f^{[1]}(W^{[1]} x^{[0]}))\big)
+\end{aligned}
+$$
+
+*[Editorial note: on the third line the superscript of the first $f$ is
+scribbled over; it reads $[3]$.]*
+
+---
+
+## Page 2
+
+*[Editorial note: a scribbled mark in the left margin.]*
+
+Assuming single data point.; ~~$f^{[3]}$ is ident~~
+
+Let groud truth of input $x^{[0]}$ is $t$,
+
+$$
+e = t - x^{[3]} = \begin{bmatrix} t_1 - x_1^{[3]} \\ t_2 - x_2^{[3]} \end{bmatrix}
+$$
+
+$$
+\text{Loss}: \; L = \tfrac{1}{2} e^T e = \tfrac{1}{2}\Big( \big(t_1 - x_1^{[3]}\big)^2 + \big(t_2 - x_2^{[3]}\big)^2 \Big)
+$$
+
+*[Editorial note: the $t_1$ in the last expression is written over another
+character.]*
+
+$$
+\frac{\partial L}{\partial W^{[3]}} =
+\begin{bmatrix}
+\dfrac{\partial L}{\partial w_{11}^{[3]}} & \dfrac{\partial L}{\partial w_{12}^{[3]}} & \dfrac{\partial L}{\partial w_{13}^{[3]}} \\[2ex]
+\dfrac{\partial L}{\partial w_{21}^{[3]}} & \dfrac{\partial L}{\partial w_{22}^{[3]}} & \dfrac{\partial L}{\partial w_{23}^{[3]}}
+\end{bmatrix}
+$$
+
+---
+
+$$
+\begin{aligned}
+\frac{\partial L}{\partial w_{11}^{[3]}}
+&= \frac{\partial}{\partial w_{11}^{[3]}} \Big( \tfrac12 \big( (t_1 - x_1^{[3]})^2 + (t_2 - x_2^{[3]})^2 \big) \Big) \\
+&= (t_1 - x_1^{[3]}) \cdot \frac{\partial}{\partial w_{11}^{[3]}} (t_1 - x_1^{[3]})
+ + (t_2 - x_2^{[3]}) \cdot \frac{\partial}{\partial w_{11}^{[3]}} (t_2 - x_2^{[3]}) \\
+&= (t_1 - x_1^{[3]}) \frac{\partial}{\partial w_{11}^{[3]}} \Big( t_1 - f^{[3]}\big( w_{11}^{[3]} x_1^{[2]} + w_{12}^{[3]} x_2^{[2]} + w_{13}^{[3]} x_3^{[2]} \big) \Big) \\
+&\quad + (t_2 - x_2^{[3]}) \frac{\partial}{\partial w_{11}^{[3]}} \Big( t_2 - f^{[3]}\big( w_{21}^{[3]} x_1^{[2]} + w_{22}^{[3]} x_2^{[2]} + w_{23}^{[3]} x_3^{[2]} \big) \Big) \\
+&= (t_1 - x_1^{[3]}) \, \require{cancel}\cancel{\tfrac{\partial}{\partial w_{11}^{[3]}}} \Big( -f'^{[3]}\big( w_{11}^{[3]} x_1^{[2]} + w_{12}^{[3]} x_2^{[2]} + w_{13}^{[3]} x_3^{[2]} \big) \Big) \cdot x_1^{[2]} \\
+&\quad + (t_2 - x_2^{[3]}) \cdot 0 \\
+&= -(t_1 - x_1^{[3]}) \cdot f'^{[3]}\big( w_{11}^{[3]} x_1^{[2]} + w_{12}^{[3]} x_2^{[2]} + w_{13}^{[3]} x_3^{[2]} \big) \cdot x_1^{[2]}
+\end{aligned}
+$$
+
+*[Editorial note: on the third line, the superscripts above
+$w_{12}^{[3]} x_2^{[2]}$ are crowded and partly overwritten; $[3]$ and $[2]$ is the
+consistent reading. On the fifth line the $\frac{\partial}{\partial w_{11}^{[3]}}$
+is scribbled out (shown as cancelled), because the derivative has been taken.]*
+
+So is calculated for other $\dfrac{\partial L}{\partial w_{ij}^{[3]}}$, where
+$1 \le i \le 2$, $1 \le j \le 3$.
+
+$$
+\begin{aligned}
+\frac{\partial L}{\partial w_{ij}^{[3]}}
+&= \frac{\partial}{\partial w_{ij}^{[3]}} \Big( \tfrac12 \big( (t_1 - x_1^{[3]})^2 + (t_2 - x_2^{[3]})^2 \big) \Big) \\
+&= (t_1 - x_1^{[3]}) \cdot \frac{\partial}{\partial w_{ij}^{[3]}} (t_1 - x_1^{[3]})
+ + (t_2 - x_2^{[3]}) \cdot \frac{\partial}{\partial w_{ij}^{[3]}} (t_2 - x_2^{[3]})
+\end{aligned}
+$$
+
+*[Editorial note: in the first line the superscript on $x_2$ looks like $[5]$;
+it is $[3]$.]*
+
+---
+
+## Page 3
+
+$$
+\begin{aligned}
+&= (t_1 - x_1^{[3]}) \frac{\partial}{\partial w_{ij}^{[3]}} \Big( t_1 - f^{[3]}\big( w_{i1}^{[3]} x_1^{[2]} + w_{i2}^{[3]} x_2^{[2]} + w_{i3}^{[3]} x_3^{[2]} \big) \Big) \\
+&\quad + (t_2 - x_2^{[3]}) \frac{\partial}{\partial w_{ij}^{[3]}} \Big( t_2 - f^{[3]}\big( w_{21}^{[3]} x_1^{[2]} + w_{22}^{[3]} x_2^{[2]} + w_{23}^{[3]} x_3^{[2]} \big) \Big) \\
+&= (t_i - x_i^{[3]}) \frac{\partial}{\partial w_{ij}^{[3]}} \Big( t_i - f^{[3]}\big( w_{i1}^{[3]} x_1^{[2]} + w_{i2}^{[3]} x_2^{[2]} + w_{i3}^{[3]} x_3^{[2]} \big) \Big) \\
+&= (t_i - x_i^{[3]}) \cdot \Big( -f'^{[3]}\big( w_{i1}^{[3]} x_1^{[2]} + w_{i2}^{[3]} x_2^{[2]} + w_{i3}^{[3]} x_3^{[2]} \big) \Big) \cdot x_j^{[2]} \\
+&= -(t_i - x_i^{[3]}) f'^{[3]}\big(a_i^{[3]}\big) \cdot x_j^{[2]}
+\qquad \big( a_i^{[3]} = w_{i1}^{[3]} x_1^{[2]} + w_{i2}^{[3]} x_2^{[2]} + w_{i3}^{[3]} x_3^{[2]} \big)
+\end{aligned}
+$$
+
+*[Editorial note: in the first line the row index of the three weights is written
+over another digit, so they read $w_{i1}, w_{i2}, w_{i3}$ (overwriting $1$). Since
+that term comes from output $1$, the weights there are $w_{11}, w_{12}, w_{13}$.
+The next line, which keeps only output $i$'s term, is correct.]*
+
+---
+
+So,
+
+$$
+\frac{\partial L}{\partial W^{[3]}} =
+\begin{bmatrix}
+-(t_1 - x_1^{[3]}) f'^{[3]}(a_1^{[3]}) \cdot x_1^{[2]}, & -(t_1 - x_1^{[3]}) f'^{[3]}(a_1^{[3]}) x_2^{[2]}, & -(t_1 - x_1^{[3]}) f'^{[3]}(a_1^{[3]}) x_3^{[2]} \\
+-(t_2 - x_2^{[3]}) f'^{[3]}(a_2^{[3]}) \cdot x_1^{[2]}, & -(t_2 - x_2^{[3]}) f'^{[3]}(a_2^{[3]}) x_2^{[2]}, & -(t_2 - x_2^{[3]}) f'^{[3]}(a_2^{[3]}) x_3^{[2]}
+\end{bmatrix}
+$$
+
+$$
+= -\begin{bmatrix} t_1 - x_1^{[3]} \\ t_2 - x_2^{[3]} \end{bmatrix}
+\odot f'^{[3]}\left( \begin{bmatrix} a_1^{[3]} \\ a_2^{[3]} \end{bmatrix} \right)
+\times \begin{bmatrix} x_1^{[2]} & x_2^{[2]} & x_3^{[3]} \end{bmatrix}
+$$
+
+$$
+= -\big(t - x^{[3]}\big) \odot f'^{[3]}\big(a^{[3]}\big) \big(x^{[2]}\big)^T
+$$
+
+*[Editorial note: in the second line, $a_1^{[3]}$ looks like $u_1^{[3]}$, and the
+last entry of the row vector carries the superscript $[3]$. It should be
+$x_3^{[2]}$, as in the matrix above and in $(x^{[2]})^T$ below.]*
+
+---
+
+Use the Chain Rule, we can calculate
+$\dfrac{\partial L}{\partial W^{[2]}}$, $\dfrac{\partial L}{\partial W^{[1]}}$
+
+---
+
+Let $\require{cancel}\cancel{\delta_3}$
+
+$$
+\begin{aligned}
+\delta^{[3]} &= -\big(t - x^{[3]}\big) \odot f'^{[3]}\big(a^{[3]}\big) \\
+\delta^{[2]} &= \big(W^{[3]}\big)^T \cdot \delta^{[3]} \odot f'^{[2]}\big(a^{[2]}\big) \\
+\delta^{[1]} &= \big(W^{[2]}\big)^T \delta^{[2]} \odot f'^{[1]}\big(a^{[1]}\big)
+\end{aligned}
+$$
+
+*[Editorial note: in the first line there is a stray mark between $t -$ and
+$x^{[3]}$.]*
+
+---
+
+## Page 4
+
+We can simplify the formulas:
+
+$$
+\frac{\partial L}{\partial W^{[3]}} = \delta^{[3]} \big(x^{[2]}\big)^T
+$$
+
+$$
+\frac{\partial L}{\partial W^{[2]}} = \delta^{[2]} \big(x^{[1]}\big)^T
+$$
+
+$$
+\frac{\partial L}{\partial W^{[1]}} = \delta^{[1]} \big(x^{[0]}\big)^T
+$$
+
+The in training
+
+*[Editorial note: probably "Then in training".]*
+
+$$
+W_\text{new} = W - \eta \frac{\partial L}{\partial W}
+$$
+
+---
+
+← Back to the cleaned note:
+[Backpropagation](index.qmd).

@@ -1,8 +1,8 @@
 ---
 title: "My Learning Path Toward an MS in Computer Science"
 subtitle: "Four parallel tracks — computer science, applied AI, math foundations, and applied math — and where I am on each"
-date: 2026-09-17
-date-modified: 2026-09-17
+date: 2026-10-20
+date-modified: 2026-10-20
 ---
 
 I'm preparing for a **Master of Science in Computer Science (MSCS)**. Rather than

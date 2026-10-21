@@ -63,6 +63,11 @@ website:
                 href: notes/neural-networks/architecture-study/index.ipynb
               - text: "What do the weights mean?"
                 href: notes/neural-networks/weights-study/index.ipynb
+              - section: "Backpropagation"
+                href: notes/neural-networks/backpropagation/index.qmd
+                contents:
+                  - text: "NumPy demo (from scratch)"
+                    href: notes/neural-networks/backpropagation/demo.ipynb
       - section: "Mathematics"
         contents:
           - section: "Calculus I (UND Math 165)"

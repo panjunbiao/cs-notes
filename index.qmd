@@ -25,7 +25,8 @@ library) and to keep a searchable refresher for my future self.
 - [Support Vector Machine](notes/support-vector-machine/index.qmd) — max-margin
   classification, deriving the weights form and the support-vector (dual) form by hand.
 - [Neural Networks](notes/neural-networks/index.qmd) — forward propagation through a
-  fully connected layer, activation functions, and softmax.
+  fully connected layer, activation functions, softmax, and training with
+  backpropagation.
 
 ## Mathematics
 

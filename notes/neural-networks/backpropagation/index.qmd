@@ -1,0 +1,252 @@
+---
+title: "Backpropagation"
+subtitle: "Deriving the gradient of a 4-5-3-2 network's loss with respect to every weight, layer by layer, and using it to train"
+date: 2026-10-20
+categories: [machine learning, neural networks, backpropagation, gradient descent]
+---
+
+::: {.callout-note appearance="simple"}
+This note follows [Forward Propagation & Activation Functions](../forward-propagation/index.qmd)
+in the [Neural Networks](../index.qmd) module. Forward propagation computes a
+network's output; **backpropagation** computes how the loss changes with every
+weight, so that gradient descent can train the network.
+
+🧪 The figures here come from a companion [NumPy notebook](demo.ipynb), which
+implements the derivation, checks it against finite differences, and trains the
+network.
+
+📄 Prefer the raw version? See my [original notes](source.qmd), a verbatim
+transcription of the handwritten pages, mistakes and all.
+:::
+
+## The network and notation
+
+The example network has 4 inputs, two hidden layers with 5 and 3 nodes, and 2
+outputs. Layers are numbered $0$ (input) to $3$ (output), and a bracketed
+superscript says which layer a quantity belongs to:
+
+- $x^{[0]}$ is the input, and $x^{[l]}$ is layer $l$'s output vector;
+- $W^{[l]}$ holds the weights from layer $l-1$ into layer $l$, with
+  $w^{[l]}_{ij}$ on the edge **into** node $i$ **from** node $j$ (destination
+  first, as in the forward-propagation note);
+- $a^{[l]} = W^{[l]} x^{[l-1]}$ is layer $l$'s pre-activation, and
+  $x^{[l]} = f^{[l]}(a^{[l]})$ its output, where $f^{[l]}$ is that layer's
+  activation function.
+
+In the figure each split node holds $a$ on the left and $x$ on the right.
+
+{{< embed demo.ipynb#fig-network >}}
+
+| Matrix | Shape | Vector | Length |
+|---|---|---|---|
+| $W^{[1]}$ | $5 \times 4$ | $x^{[0]}$ | 4 |
+| $W^{[2]}$ | $3 \times 5$ | $a^{[1]}, x^{[1]}$ | 5 |
+| $W^{[3]}$ | $2 \times 3$ | $a^{[2]}, x^{[2]}$ | 3 |
+| | | $a^{[3]}, x^{[3]}$ | 2 |
+
+As in my notes, there are no biases; I come back to them at the end.
+
+## Forward pass as a nested function
+
+Substituting each layer into the next writes the whole network as one nested
+function of the input:
+
+$$
+x^{[3]} = f^{[3]}\big(a^{[3]}\big)
+= f^{[3]}\big(W^{[3]} x^{[2]}\big)
+= \cdots
+= f^{[3]}\Big(W^{[3]} f^{[2]}\big(W^{[2]} f^{[1]}(W^{[1]} x^{[0]})\big)\Big).
+$$
+
+Backpropagation is the chain rule applied to this nesting, peeling it from the
+outside in. $W^{[3]}$ sits in the outermost layer, so its gradient is the easiest
+to compute; $W^{[1]}$ is buried deepest.
+
+## The loss
+
+For a single data point with input $x^{[0]}$ and ground truth $t$, the error is
+$e = t - x^{[3]}$ and the loss is half the squared error:
+
+$$
+L = \tfrac12 e^T e = \tfrac12 \Big( \big(t_1 - x^{[3]}_1\big)^2 + \big(t_2 - x^{[3]}_2\big)^2 \Big).
+$$
+
+The goal is $\partial L / \partial W^{[l]}$ for each layer: a matrix the same
+shape as $W^{[l]}$, whose entry $(i, j)$ is $\partial L / \partial w^{[l]}_{ij}$.
+
+## The output layer, one weight at a time
+
+Take one output-layer weight $w^{[3]}_{ij}$. Differentiating the loss gives one
+term per output:
+
+$$
+\frac{\partial L}{\partial w^{[3]}_{ij}}
+= \big(t_1 - x^{[3]}_1\big) \frac{\partial \big(t_1 - x^{[3]}_1\big)}{\partial w^{[3]}_{ij}}
++ \big(t_2 - x^{[3]}_2\big) \frac{\partial \big(t_2 - x^{[3]}_2\big)}{\partial w^{[3]}_{ij}}.
+$$
+
+Two observations collapse this:
+
+1. **Only output $i$ depends on $w^{[3]}_{ij}$.** The weight sits on an edge into
+   node $i$, so the other output's term is zero. (For $w^{[3]}_{11}$, the term
+   for output 2 is $(t_2 - x^{[3]}_2) \cdot 0$.)
+2. **Only one term of $a^{[3]}_i$ depends on it.** In
+   $a^{[3]}_i = w^{[3]}_{i1} x^{[2]}_1 + w^{[3]}_{i2} x^{[2]}_2 + w^{[3]}_{i3} x^{[2]}_3$,
+   the derivative with respect to $w^{[3]}_{ij}$ is $x^{[2]}_j$.
+
+Applying the chain rule through $x^{[3]}_i = f^{[3]}(a^{[3]}_i)$:
+
+$$
+\boxed{\;
+\frac{\partial L}{\partial w^{[3]}_{ij}} = -\big(t_i - x^{[3]}_i\big)\, f'^{[3]}\big(a^{[3]}_i\big)\, x^{[2]}_j
+\;}
+$$
+
+Read it as three factors: how wrong output $i$ is, how sensitive output $i$ is to
+its pre-activation, and how large the input along this edge is.
+
+## The output layer as a matrix
+
+Writing all six entries out, every row shares the factor
+$-(t_i - x^{[3]}_i) f'^{[3]}(a^{[3]}_i)$ and every column shares $x^{[2]}_j$. So
+the gradient matrix is a column vector times a row vector, an **outer product**:
+
+$$
+\frac{\partial L}{\partial W^{[3]}}
+= \underbrace{-\big(t - x^{[3]}\big) \odot f'^{[3]}\big(a^{[3]}\big)}_{2 \times 1}\;
+\underbrace{\big(x^{[2]}\big)^T}_{1 \times 3},
+$$
+
+where $\odot$ is element-wise multiplication. The first factor is important
+enough to get a name:
+
+$$
+\delta^{[3]} = -\big(t - x^{[3]}\big) \odot f'^{[3]}\big(a^{[3]}\big),
+\qquad
+\frac{\partial L}{\partial W^{[3]}} = \delta^{[3]} \big(x^{[2]}\big)^T.
+$$
+
+::: {.callout-note title="My note: what the delta means" icon=false}
+Comparing with the boxed formula, $\delta^{[3]}_i = \partial L / \partial a^{[3]}_i$:
+the delta is the gradient of the loss with respect to a layer's
+**pre-activation**. That's the quantity that gets passed backward. Every weight
+gradient is then "delta of the node the edge goes into" times "output of the node
+it comes from".
+:::
+
+{{< embed demo.ipynb#fig-outer-product >}}
+
+## The hidden layers: the delta recursion
+
+My notes state the result for the hidden layers directly ("use the chain rule").
+Each layer's delta comes from the next layer's:
+
+$$
+\delta^{[2]} = \big(W^{[3]}\big)^T \delta^{[3]} \odot f'^{[2]}\big(a^{[2]}\big),
+\qquad
+\delta^{[1]} = \big(W^{[2]}\big)^T \delta^{[2]} \odot f'^{[1]}\big(a^{[1]}\big),
+$$
+
+and the gradients keep the same outer-product form:
+
+$$
+\frac{\partial L}{\partial W^{[2]}} = \delta^{[2]} \big(x^{[1]}\big)^T,
+\qquad
+\frac{\partial L}{\partial W^{[1]}} = \delta^{[1]} \big(x^{[0]}\big)^T.
+$$
+
+::: {.callout-note title="My note: deriving $\delta^{[2]}$" icon=false}
+Hidden node $j$ in layer 2 affects the loss through **every** output, because its
+output $x^{[2]}_j$ feeds both $a^{[3]}_1$ and $a^{[3]}_2$. The chain rule sums
+over those paths:
+
+$$
+\delta^{[2]}_j = \frac{\partial L}{\partial a^{[2]}_j}
+= \sum_{i} \underbrace{\frac{\partial L}{\partial a^{[3]}_i}}_{\delta^{[3]}_i}\,
+\underbrace{\frac{\partial a^{[3]}_i}{\partial x^{[2]}_j}}_{w^{[3]}_{ij}}\,
+\underbrace{\frac{\partial x^{[2]}_j}{\partial a^{[2]}_j}}_{f'^{[2]}(a^{[2]}_j)}
+= \Big( \sum_i w^{[3]}_{ij}\, \delta^{[3]}_i \Big) f'^{[2]}\big(a^{[2]}_j\big).
+$$
+
+The sum runs down **column** $j$ of $W^{[3]}$, which is row $j$ of
+$(W^{[3]})^T$, giving the matrix form above. The forward pass sends signals along
+the edges with $W$; the backward pass sends deltas along the same edges in
+reverse with $W^T$. Then $\partial L / \partial w^{[2]}_{jk} = \delta^{[2]}_j\, x^{[1]}_k$,
+exactly as for the output layer, and the same step gives $\delta^{[1]}$.
+:::
+
+## The algorithm
+
+::: {.callout-important title="Backpropagation (one data point)" icon=false}
+1. **Forward:** for $l = 1, 2, 3$, compute $a^{[l]} = W^{[l]} x^{[l-1]}$ and
+   $x^{[l]} = f^{[l]}(a^{[l]})$. Keep them all.
+2. **Output delta:** $\delta^{[3]} = -\big(t - x^{[3]}\big) \odot f'^{[3]}\big(a^{[3]}\big)$.
+3. **Backward:** for $l = 2, 1$, compute
+   $\delta^{[l]} = \big(W^{[l+1]}\big)^T \delta^{[l+1]} \odot f'^{[l]}\big(a^{[l]}\big)$.
+4. **Gradients:** $\dfrac{\partial L}{\partial W^{[l]}} = \delta^{[l]} \big(x^{[l-1]}\big)^T$ for every layer.
+:::
+
+The backward pass costs about as much as the forward pass, because it is the same
+matrix–vector products run in reverse. The notebook confirms the formulas by
+comparing them with finite differences, which nudge each weight by $\pm\varepsilon$
+and need two forward passes **per weight**. They agree to about $10^{-10}$:
+
+{{< embed demo.ipynb#fig-gradcheck >}}
+
+## Training
+
+With the gradients in hand, gradient descent updates every weight matrix in the
+direction that lowers the loss, with learning rate $\eta$:
+
+$$
+W^{[l]}_\text{new} = W^{[l]} - \eta\, \frac{\partial L}{\partial W^{[l]}}.
+$$
+
+Repeating forward pass, backward pass, and update on the single data point drives
+the outputs to the target:
+
+{{< embed demo.ipynb#fig-train-single >}}
+
+For a dataset of $N$ points, the loss is the sum of the per-point losses, so its
+gradient is the sum of the per-point gradients. The algorithm doesn't change; you
+run it on each point (or on all of them at once, stacked as matrix columns) and
+add up the results.
+
+::: {.callout-note title="What my notes leave out: the bias" icon=false}
+Real layers compute $a^{[l]} = W^{[l]} x^{[l-1]} + b^{[l]}$. Since
+$\partial a^{[l]}_i / \partial b^{[l]}_i = 1$, the bias gradient is just the
+delta, $\partial L / \partial b^{[l]} = \delta^{[l]}$, and the rest of the
+algorithm is unchanged.
+
+Without biases, the notebook found something I didn't expect. With odd
+activations like $\tanh$, a bias-free network computes an odd function: it maps
+$-x$ to the opposite of what it maps $x$ to. It then **cannot** learn a rule that
+gives $x$ and $-x$ the same label, such as "$x_1$ and $x_4$ have the same sign",
+and stays at chance however long it trains. Adding biases fixes it:
+
+{{< embed demo.ipynb#fig-train-batch >}}
+:::
+
+## Clarifications on my handwritten notes
+
+- **"$f^{[3]}$ is identity" (struck out).** I started by assuming a linear
+  output layer and then kept $f^{[3]}$ general. With an identity output,
+  $f'^{[3]} = 1$ and the output delta is just $\delta^{[3]} = -(t - x^{[3]}) = -e$.
+- **Overwritten indices on page 3.** In the first line I overwrote the weights in
+  output 1's term to read $w_{i1}, w_{i2}, w_{i3}$; they should stay
+  $w_{11}, w_{12}, w_{13}$ there. The next line, which keeps only output $i$'s
+  term, is right.
+- **The row vector on page 3** ends with $x^{[3]}_3$; it should be $x^{[2]}_3$, as
+  in $(x^{[2]})^T$ on the next line.
+- **Order of operations in the recursion.**
+  $\big(W^{[l+1]}\big)^T \delta^{[l+1]} \odot f'^{[l]}(a^{[l]})$ means: do the
+  matrix–vector product first, then multiply element-wise.
+
+## Acknowledgment
+
+These notes are based on my work for **24-887 — Machine Learning & Artificial
+Intelligence for Engineers**, taught by Professor Levent Burak Kara as part of
+Carnegie Mellon University's
+[AI Engineering Fundamentals](https://www.cmu.edu/online/ai-engineering-fundamentals)
+graduate certificate. All credit for the course material goes to the instructor and
+CMU; any errors in these notes are my own.
