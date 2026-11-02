@@ -1,6 +1,6 @@
 ---
 title: "CS Notes"
-subtitle: "Learning notes on machine learning, AI, and the math behind them"
+subtitle: "Learning notes on machine learning, AI, the math behind them, and career preparation"
 ---
 
 Welcome! This is my personal, evolving set of notes taken while working through
@@ -32,6 +32,21 @@ library) and to keep a searchable refresher for my future self.
 
 - [Calculus I (UND Math 165)](notes/calculus-1/index.qmd) — key definitions,
   theorems, and rules for limits and derivatives, plus a one-page quick reference.
+
+## Career
+
+Interview practice and job skills, kept next to the coursework.
+
+- [LeetCode](notes/leetcode/index.qmd) — problems from the
+  [Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) study
+  plan. Each note records the plan, where the first attempt left it, and the
+  invariant to write down before coding.
+- *Kubernetes* — planned.
+
+::: {.callout-note appearance="simple"}
+Items marked *planned* are subjects I'll add notes for later. They are not
+linked yet.
+:::
 
 ## Credit
 

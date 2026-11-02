@@ -4,7 +4,7 @@ project:
 
 website:
   title: "CS Notes"
-  description: "Personal study notes on machine learning, AI, and the math behind them."
+  description: "Personal study notes on machine learning, AI, the math behind them, and career preparation."
   site-url: "https://panjunbiao.github.io/cs-notes"
   repo-url: "https://github.com/panjunbiao/cs-notes"
   repo-actions: [source, edit, issue]
@@ -26,6 +26,9 @@ website:
           - text: "---"
           - href: notes/calculus-1/index.qmd
             text: Calculus I
+          - text: "---"
+          - href: notes/leetcode/index.qmd
+            text: LeetCode
     right:
       - icon: github
         href: https://github.com/panjunbiao/cs-notes
@@ -79,6 +82,13 @@ website:
                 href: notes/calculus-1/derivatives/index.qmd
               - text: "Quick reference"
                 href: notes/calculus-1/quick-reference/index.qmd
+      - section: "Career"
+        contents:
+          - section: "LeetCode"
+            href: notes/leetcode/index.qmd
+            contents:
+              - text: "Remove Duplicates from Sorted Array"
+                href: notes/leetcode/remove-duplicates-from-sorted-array/index.qmd
   page-footer:
     center: |
       Personal study notes. Course and textbook credits are given on each page.

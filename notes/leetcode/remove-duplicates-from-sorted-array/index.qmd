@@ -1,0 +1,199 @@
+---
+title: "Remove Duplicates from Sorted Array"
+subtitle: "Two pointers that only move forward — and the bug from resetting one of them"
+date: 2026-11-01
+categories: [career, leetcode, arrays, two pointers]
+---
+
+::: {.callout-note appearance="simple"}
+[LeetCode 26. Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array),
+from the [Top Interview 150](https://leetcode.com/studyplan/top-interview-150/)
+study plan. Part of the [LeetCode](../index.qmd) notes. The code is C#, matching
+the submission.
+:::
+
+## The problem
+
+`nums` is sorted in non-decreasing order. Remove duplicates **in place** so that
+each distinct value appears once, in the same order, packed at the front of the
+array. Return `k`, the number of distinct values. Whatever sits past index
+`k - 1` is ignored.
+
+The usual example is `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`. After the call, the first
+five slots are `[0, 1, 2, 3, 4]` and the return value is `5`.
+
+A correct solution is a linear scan with a constant amount of extra memory. The
+array is already sorted, so equal values come in one contiguous run.
+
+## The plan I should have written first
+
+This is two nested loops and two pointers, and **both pointers only move
+forward**.
+
+| Pointer | Meaning | How it moves |
+|---|---|---|
+| `k` | Index of the last value in the compacted unique prefix. `nums[0..k]` is the answer so far. | Increases by one only when a new distinct value is written. |
+| `next` | Read index into the part of the array not yet folded into that prefix. | Increases only. It walks through the current run of duplicates, then stops on the next new value. |
+
+The outer loop is "place the next distinct value." The inner loop is "skip the
+rest of the run that matches `nums[k]`." Because a run is contiguous, skipping
+it means `next` jumps ahead of `k`. The write fills **one** slot,
+`nums[k + 1]`. It does not clear the gap `next` just jumped over.
+
+So the invariant, after every write, is:
+
+1. `nums[0..k]` holds the distinct values seen so far, in order.
+2. `next` has already passed every index before it. Those cells may still hold
+   old duplicates, and they must not be read again.
+3. `nums[next]` is the value just copied (or `next` is off the end).
+
+Anything that assigns `next` to a smaller index breaks (2).
+
+## First attempt
+
+```csharp
+public class Solution {
+    public int RemoveDuplicates(int[] nums) {
+        if (nums == null || nums.Length == 0) {
+            return 0;
+        }
+        int k = 0;
+        int next = k + 1;
+        while (k < nums.Length - 1) {
+            next = k + 1;
+            while (next < nums.Length && nums[next] == nums[k]) {
+                next++;
+            }
+            if (next == nums.Length) {
+                break;
+            }
+            nums[++k] = nums[next];
+        }
+        return k + 1;
+    }
+}
+```
+
+The damaging line is `next = k + 1` at the start of every outer iteration.
+`next` is initialized to `k + 1` once already; the assignment inside the loop
+pulls the read pointer back to the slot just after the write index.
+
+## Where that line breaks the array
+
+Take `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`.
+
+The first two writes still look fine, because the cells just after `k` happen
+to be duplicates of the current value:
+
+1. `k = 0`, scan from index `1`, skip the second `0`, write `1` at index `1`.
+   The array is `[0, 1, 1, 1, 1, 2, 2, 3, 3, 4]`.
+2. `k = 1`, scan from index `2`, skip the run of `1`s, write `2` at index `2`.
+   The array is `[0, 1, 2, 1, 1, 2, 2, 3, 3, 4]`.
+
+Index `2` now holds `2`, but indices `3` and `4` still hold `1`. Those `1`s
+were already passed when `next` jumped to the first `2`. The next outer
+iteration then does `next = k + 1`, so `next` becomes `3`. The inner loop asks
+whether `nums[3] == nums[2]`, that is `1 == 2`. It is not, so the loop does
+not skip anything, and the write copies that stale `1`:
+
+```text
+nums[++k] = nums[3]    →    [0, 1, 2, 1, ...]
+```
+
+The unique prefix is no longer sorted and no longer unique. Later iterations
+keep copying leftover values out of that gap. The call returns `9`, and the
+array is `[0, 1, 2, 1, 2, 3, 2, 3, 4, 4]` instead of a prefix of length `5`.
+
+The shorter input `[0, 0, 1, 1, 2]` fails the same way. After the prefix has
+correctly become `[0, 1, 2, ...]`, the cell immediately after `k` still holds
+an old `1`. Restarting there copies `1` back into the answer, and the method
+returns `5`.
+
+A short case can hide this. On `[1, 1, 2]` the only extra `1` sits in the cell
+the write overwrites, so `k + 1` lands on the already-found `2` and the buggy
+version returns the right answer. The reset is harmless only while `k` and
+`next` stay adjacent. The inner loop exists to make them **not** adjacent, and
+it leaves a stale gap whenever a run is longer than the single cell the write
+fills. The reset and the inner loop contradict each other.
+
+## Corrected solution
+
+Drop the reset. `next` is set once, before either loop, and from then on both
+pointers only increase.
+
+```csharp
+public class Solution {
+    public int RemoveDuplicates(int[] nums) {
+        if (nums == null || nums.Length == 0) {
+            return 0;
+        }
+        int k = 0;
+        int next = 1;
+        while (k < nums.Length - 1) {
+            while (next < nums.Length && nums[next] == nums[k]) {
+                next++;
+            }
+            if (next == nums.Length) {
+                break;
+            }
+            nums[++k] = nums[next];
+        }
+        return k + 1;
+    }
+}
+```
+
+On `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`, `next` moves `1 → 2 → 5 → 7 → 9` and never
+returns to the gap it jumped. Each jump lands on a new value (`1`, then `2`,
+`3`, `4`), and that value is written at `++k`. When `next` falls off the end,
+the prefix is `[0, 1, 2, 3, 4]` and `k + 1` is `5`.
+
+There is no infinite loop hiding in the nested version. After a write,
+`nums[next] == nums[k]`, so the next inner loop advances `next` at least once
+before it can stop on a different value.
+
+Each index is visited a constant number of times, and the only extra memory is
+the two indices: $O(n)$ time and $O(1)$ extra space. The `null` and empty
+checks are outside the problem constraints (`nums` has at least one element);
+they do not change the result on a legal input.
+
+## The same rule, with the movement written into the loop
+
+The version above is the plan I actually had: an inner loop that skips a whole
+run. The usual editorial writes the same invariant as a single loop, where the
+read pointer is the loop variable and so cannot be reassigned backward:
+
+```csharp
+public int RemoveDuplicates(int[] nums) {
+    int k = 0;
+    for (int next = 1; next < nums.Length; next++) {
+        if (nums[next] != nums[k]) {
+            nums[++k] = nums[next];
+        }
+    }
+    return k + 1;
+}
+```
+
+`next` still only moves forward, by one each iteration instead of jumping a
+run. `k` still marks the end of the unique prefix and advances only on a new
+value. The cells between them are unread leftovers, same as before. Putting
+`next` in the `for` header makes the "only move forward" rule structural: the
+reset that broke the first attempt cannot be written without fighting the loop.
+
+## What I want to remember
+
+The bug was not a slip in the inner `while`. It came from coding before the
+plan was finished. I had two loops, but I had not committed to the rule that
+both pointers only move forward, so `next = k + 1` looked like a reasonable way
+to "start from the write index" on each pass. It re-enters a region the scan
+has already finished.
+
+Next time, before writing the loops, write down three lines:
+
+1. What each pointer means.
+2. Which way it is allowed to move.
+3. Which slice of the array is finished and must not be read again.
+
+If a line would move a pointer backward, or into that finished slice, it is not
+part of the plan.

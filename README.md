@@ -21,6 +21,10 @@ The full plan, with links, status, and how the tracks connect, is on the
 (source: [`learning-path.qmd`](learning-path.qmd)). It's my personal plan, shared
 as a reference for anyone pursuing a similar path.
 
+Separately, the site has a **Career** section for interview practice and job
+skills that sit next to the coursework. The first subject is
+[LeetCode](notes/leetcode/index.qmd); Kubernetes is planned.
+
 The notes are the *source of truth*; the published website is rendered from them
 with [Quarto](https://quarto.org) and deployed to GitHub Pages by CI — so the
 notes and the rendered pages stay decoupled.

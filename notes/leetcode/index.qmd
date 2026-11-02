@@ -1,0 +1,28 @@
+---
+title: "LeetCode"
+subtitle: "Interview problems, with the plan and the mistakes written down"
+listing:
+  contents:
+    - remove-duplicates-from-sorted-array/index.qmd
+  type: table
+  fields: [title, subtitle, date]
+  sort: "date"
+---
+
+Notes from working LeetCode problems, starting with the
+[Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) study plan.
+Each note is about the thought process: the plan I meant to follow, where the
+first attempt diverged from it, and the invariant I should have written down
+before coding.
+
+## Problems
+
+- **[Remove Duplicates from Sorted Array](remove-duplicates-from-sorted-array/index.qmd)** —
+  two pointers that only move forward, and the bug from restarting the read
+  pointer on every outer iteration.
+  ([LeetCode 26](https://leetcode.com/problems/remove-duplicates-from-sorted-array))
+
+::: {.callout-note appearance="simple"}
+LeetCode is one subject under Career. Kubernetes is the next subject I plan to
+add; it does not have a page yet.
+:::
