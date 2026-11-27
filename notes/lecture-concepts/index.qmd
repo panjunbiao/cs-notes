@@ -14,9 +14,7 @@ and the how-to loop live in the
 [support vector machines](../support-vector-machine/index.qmd), and
 [neural networks](../neural-networks/index.qmd) notes.
 
-Week 7, Lecture 1 has a sync deck only in the downloaded set. That sync hour
-is the review of the missing async lecture, so its ideas are listed there.
-Week 14 is a single lecture.
+Week 14 is a single lecture. Week 7, Lecture 1 is the annotated async deck.
 :::
 
 ## Where to look
@@ -222,13 +220,30 @@ Deeper notes: [neural networks](../neural-networks/index.qmd).
 
 ### Lecture 1 — From a perceptron to a stack of layers
 
-**Sync** (the async deck is not in the downloaded set; this hour reviews it).
-Why a network: a perceptron is a weighted sum plus a threshold, and one
-perceptron cannot solve problems that are not linearly separable. A network
-is perceptrons in series and in parallel. Forward propagation. The same pass
-as a product of weight matrices. Softmax on a classification head. Learning
-is still "change weights to reduce a loss," now with a forward and a backward
-pass. Bias terms, and counting trainable parameters.
+**Async.** A network can do regression, including several outputs, and
+nonlinear classification. Shallow versus deep: a small net has tens of
+weights; AlexNet-scale models have tens of millions. This course trains the
+shallow ones. "Data hungry" is about big nets; a few parameters do not
+require a huge sample. The key move is minimizing a loss by backpropagation.
+A network generalizes logistic regression, and one hidden layer is a
+universal approximator. Biology supplies the picture: a node is a neuron, a
+weight is a synapse, and the node applies an activation. A perceptron is a
+weighted sum of inputs, plus a bias, then an activation (the worked example
+uses a sigmoid). Layers: input, hidden, output. Training adjusts the weight
+matrices so the output matches the labels; regression uses MSE and gradient
+descent. Forward propagation sends one sample through at a time. In matrix
+form, $W$ is shaped so that it maps the incoming width to the outgoing
+width; entry $W_{i,j}$ connects source $j$ to target $i$. Softmax on the
+output makes the class scores sum to 1, the same device as multinomial
+logistic regression. A bias is an extra input fixed at 1, so a layer with
+$n$ inputs and $m$ outputs has $(n+1) \times m$ trainable weights. In
+PyTorch the bias is a flag, on by default; the library inserts it.
+
+**Sync.** One perceptron cannot separate data that is not linearly
+separable; XOR is the example, and that limit is tied to the first AI
+winter. The learning step is named as backward propagation plus a gradient
+update. The rest of the hour walks the async lecture again: the ontology,
+the forward pass, the matrix form, softmax, and the parameter count.
 
 ### Lecture 2 — Activation functions
 
