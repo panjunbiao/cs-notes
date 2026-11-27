@@ -41,44 +41,46 @@ website:
     style: docked
     search: true
     contents:
-      - section: "Machine Learning"
+      - section: "Artificial Intelligence"
         contents:
-          - text: "A Machine Learning Workflow"
-            href: notes/ml-workflow/index.qmd
-          - text: "Lecture Concepts"
-            href: notes/lecture-concepts/index.qmd
-          - section: "Logistic Regression"
-            href: notes/logistic-regression/index.qmd
+          - section: "Machine Learning & AI for Engineers (CMU 24-887)"
             contents:
-              - section: "Two-Class, Two-Feature Linear Classifier"
-                href: notes/logistic-regression/two-class-linear/index.qmd
+              - text: "A Machine Learning Workflow"
+                href: notes/ml-workflow/index.qmd
+              - text: "Lecture Concepts"
+                href: notes/lecture-concepts/index.qmd
+              - section: "Logistic Regression"
+                href: notes/logistic-regression/index.qmd
                 contents:
-                  - text: "NumPy demo (from scratch)"
-                    href: notes/logistic-regression/two-class-linear/demo.ipynb
-          - section: "Support Vector Machine"
-            href: notes/support-vector-machine/index.qmd
-            contents:
-              - text: "Hard-Margin Linear SVM"
-                href: notes/support-vector-machine/hard-margin-linear/index.qmd
-              - text: "Kernels: a visual tour"
-                href: notes/support-vector-machine/kernel-boundaries/index.ipynb
-          - section: "Neural Networks"
-            href: notes/neural-networks/index.qmd
-            contents:
-              - section: "Forward Propagation & Activations"
-                href: notes/neural-networks/forward-propagation/index.qmd
+                  - section: "Two-Class, Two-Feature Linear Classifier"
+                    href: notes/logistic-regression/two-class-linear/index.qmd
+                    contents:
+                      - text: "NumPy demo (from scratch)"
+                        href: notes/logistic-regression/two-class-linear/demo.ipynb
+              - section: "Support Vector Machine"
+                href: notes/support-vector-machine/index.qmd
                 contents:
-                  - text: "NumPy demo (from scratch)"
-                    href: notes/neural-networks/forward-propagation/demo.ipynb
-              - text: "Depth, width & activation study"
-                href: notes/neural-networks/architecture-study/index.ipynb
-              - text: "What do the weights mean?"
-                href: notes/neural-networks/weights-study/index.ipynb
-              - section: "Backpropagation"
-                href: notes/neural-networks/backpropagation/index.qmd
+                  - text: "Hard-Margin Linear SVM"
+                    href: notes/support-vector-machine/hard-margin-linear/index.qmd
+                  - text: "Kernels: a visual tour"
+                    href: notes/support-vector-machine/kernel-boundaries/index.ipynb
+              - section: "Neural Networks"
+                href: notes/neural-networks/index.qmd
                 contents:
-                  - text: "NumPy demo (from scratch)"
-                    href: notes/neural-networks/backpropagation/demo.ipynb
+                  - section: "Forward Propagation & Activations"
+                    href: notes/neural-networks/forward-propagation/index.qmd
+                    contents:
+                      - text: "NumPy demo (from scratch)"
+                        href: notes/neural-networks/forward-propagation/demo.ipynb
+                  - text: "Depth, width & activation study"
+                    href: notes/neural-networks/architecture-study/index.ipynb
+                  - text: "What do the weights mean?"
+                    href: notes/neural-networks/weights-study/index.ipynb
+                  - section: "Backpropagation"
+                    href: notes/neural-networks/backpropagation/index.qmd
+                    contents:
+                      - text: "NumPy demo (from scratch)"
+                        href: notes/neural-networks/backpropagation/demo.ipynb
       - section: "Mathematics"
         contents:
           - section: "Calculus I (UND Math 165)"

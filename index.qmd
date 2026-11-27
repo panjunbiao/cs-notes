@@ -18,7 +18,9 @@ I write these notes mostly to understand things more deeply (e.g. deriving the
 gradient-descent update rules by hand, even though real projects would just use a
 library) and to keep a searchable refresher for my future self.
 
-## Machine learning
+## Artificial intelligence
+
+### Machine Learning & AI for Engineers (CMU 24-887)
 
 - [A Machine Learning Workflow](notes/ml-workflow/index.qmd) — the end-to-end
   loop I want to reuse: feature scaling and expansion, pipelines, k-fold
