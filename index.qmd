@@ -20,6 +20,10 @@ library) and to keep a searchable refresher for my future self.
 
 ## Machine learning
 
+- [A Machine Learning Workflow](notes/ml-workflow/index.qmd) — the end-to-end
+  loop I want to reuse: feature scaling and expansion, pipelines, k-fold
+  comparison of models and hyperparameters, ensembles, and the plots that go
+  with the score.
 - [Logistic Regression](notes/logistic-regression/index.qmd) — binary, multi-class,
   and non-linear classification, starting from deriving gradient descent by hand.
 - [Support Vector Machine](notes/support-vector-machine/index.qmd) — max-margin

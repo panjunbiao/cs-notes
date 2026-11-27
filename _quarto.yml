@@ -17,6 +17,8 @@ website:
         text: Learning Path
       - text: "Notes"
         menu:
+          - href: notes/ml-workflow/index.qmd
+            text: Machine Learning Workflow
           - href: notes/logistic-regression/index.qmd
             text: Logistic Regression
           - href: notes/support-vector-machine/index.qmd
@@ -39,6 +41,8 @@ website:
     contents:
       - section: "Machine Learning"
         contents:
+          - text: "A Machine Learning Workflow"
+            href: notes/ml-workflow/index.qmd
           - section: "Logistic Regression"
             href: notes/logistic-regression/index.qmd
             contents:

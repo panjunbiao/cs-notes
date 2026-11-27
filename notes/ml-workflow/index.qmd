@@ -1,0 +1,496 @@
+---
+title: "A Machine Learning Workflow"
+subtitle: "From raw columns to a model I would trust on a new sample"
+date: 2026-11-26
+categories: [machine learning, workflow, scikit-learn, feature engineering, cross-validation]
+---
+
+::: {.callout-note appearance="simple"}
+This is the working order I want to follow on a new dataset. It is assembled from
+the weekly coding homework in CMU **24-887 — Machine Learning & AI for
+Engineers**: each week taught one piece (a scaler, a model family, k-fold, PCA,
+an ensemble), and this page puts those pieces into one loop.
+
+The derivations live elsewhere: [logistic regression](../logistic-regression/index.qmd),
+[support vector machines](../support-vector-machine/index.qmd), and
+[neural networks](../neural-networks/index.qmd). This page is the part I would
+open at work.
+:::
+
+## The loop
+
+Hold out a test set first. Every choice after that — which columns, which scaler,
+which model, which hyperparameters — is made on the training rows and checked
+with k-fold. The test set is scored once, after the choice is fixed.
+
+```{mermaid}
+flowchart TD
+  A["Frame the job<br/>regression, classification, or no labels"] --> B["Look at the columns<br/>histograms, correlation, a few raw plots"]
+  B --> C["Hold out a test set<br/>and do not tune on it"]
+  C --> D["Build pipelines<br/>scale, expand, select, then the model"]
+  D --> E["Compare models and hyperparameters<br/>with k-fold on the training set"]
+  E --> F{"Validation score<br/>still moving?"}
+  F -->|yes| D
+  F -->|no| G["Optional ensemble<br/>bagging, boosting, stacking"]
+  G --> H["Refit the winner on all training rows"]
+  H --> I["Score the test set once<br/>and plot the errors"]
+```
+
+Three habits make the score mean something.
+
+1. **Fit every transform on the training side of the current split.** A
+   `Pipeline` does this on each fold. In the week 6 scaling exercise the test
+   rows were scaled with the min and max of the *training* matrix, so a test
+   value landed above 1. That is the correct behavior. Computing min, max,
+   mean, variance, quantiles, PCA axes, or a correlation filter on the full
+   table leaks the test rows into the transform.
+2. **Read the training score and the validation score together.** On the
+   cylinder-bands data, one decision tree (`max_depth=10`) reached 93% training
+   accuracy and 66% test accuracy. A random forest of 100 such trees reached
+   100% and 82%. On the nodal-stress XGBoost sweep, `eta=0.7` and `max_depth=20`
+   drove training MSE to $7.4 \times 10^{-6}$ while test MSE was
+   $6.0 \times 10^{-3}$. The best test MSE in that grid was
+   $4.6 \times 10^{-3}$, at `eta=0.3` and `max_depth=15`. The lowest training
+   error was a worse model.
+3. **Average more than one split.** In the week 10 neural-net study, 100 epochs
+   underfit, 2000 epochs overfit, and 500 was the best of the three by average
+   test MSE. Inside that best setting the five folds still ranged from about
+   0.16 to 0.21. A single 80/20 cut would have picked a winner that another cut
+   disagreed with.
+
+The XGBoost grid above was scored on the test set, because that is what the
+exercise asked. The same grid at work goes through `GridSearchCV` on the
+training split. The test set stays out of the search.
+
+## 1. Frame the job
+
+| I have | I fit | I report |
+|---|---|---|
+| A number to predict | A regressor | MSE, and $R^2$ when I want a unitless comparison |
+| A class label | A classifier | Accuracy, plus a confusion matrix once the model is chosen |
+| No label, and I need groups or a view of the points | DBSCAN, or PCA / t-SNE | The picture, and a downstream supervised score only if labels show up later |
+
+MSE and accuracy both get printed on the training rows and on the held-out
+rows. The confusion matrix is a one-time picture of *which* classes trade off,
+after the model is chosen. Week 9 used it on MNIST; week 11 used it on a
+classifier checked after clustering-style image work.
+
+## 2. Look at the columns before fitting
+
+Plot a histogram of each column on the training rows, and a scatter of the
+target against any column that might dominate. On the week 6 concrete-strength
+sheet, those histograms were what made the later scaling change intelligible:
+quantile scaling cut the degree-3 linear model's test MSE from 59.4 to 32.7.
+
+Then drop a column that repeats another one. Pearson filtering, as coded in
+week 6: take the absolute correlation of the training columns, and when two
+features correlate above a threshold, drop the one with the weaker correlation
+to the target.
+
+```python
+import numpy as np
+
+def redundant_feature_indices(X, y, threshold=0.9):
+    """Indices of columns to drop. X and y are training rows only."""
+    data = np.column_stack([y, X])
+    corr = np.abs(np.corrcoef(data.T))
+    remove = []
+    for i, j in zip(*np.triu_indices(corr.shape[0], k=1)):
+        if i == 0 or corr[i, j] <= threshold:
+            continue
+        # columns i and j of `data`; feature index in X is that minus 1
+        drop = j if corr[i, 0] >= corr[j, 0] else i
+        if drop != 0:
+            remove.append(drop - 1)
+    return sorted(set(remove))
+```
+
+A wrapper does the same job with a model in the loop. Recursive feature
+elimination (`RFE`) fits an estimator, throws away the weakest column, and
+repeats until `n_features_to_select` remain. On the nodal-stress features the
+homework kept 30. That count is specific to that table. In the workflow, `RFE`
+sits *inside* the pipeline so each fold picks its own columns:
+
+```python
+from sklearn.feature_selection import RFE
+from sklearn.tree import DecisionTreeRegressor
+
+RFE(DecisionTreeRegressor(random_state=0), n_features_to_select=30)
+```
+
+After a fit, read `feature_importances_` on a tree and `coef_` on a linear
+model, and plot them. Those plots are how I check that the selector kept the
+columns the model actually uses.
+
+## 3. Feature engineering
+
+Each of these is a step in a pipeline, fitted on training rows.
+
+### Scaling
+
+Per column, from the training rows:
+
+| Transform | Formula | What it did in the homework |
+|---|---|---|
+| Min–max | $(x - x_{\min}) / (x_{\max} - x_{\min})$ | Puts each training column on $[0, 1]$. A test value can fall outside that interval. |
+| Standard | $(x - \mu) / \sigma$ | Mean 0, variance 1. The week 8 network's loss did not converge until the inputs were standardized. |
+| Quantile | Map the column onto a target distribution (uniform by default) | `QuantileTransformer(n_quantiles=800)` on a 2-D regression. |
+
+Same four models, test MSE, before and after that quantile transform:
+
+| Model | Raw inputs | After quantile scaling |
+|---|---:|---:|
+| Degree-8 linear regression | 82.8 | 237.3 |
+| RBF SVR, $C = 1000$ | 98.6 | 43.0 |
+| k-NN, $k = 4$ | 47.6 | 36.4 |
+| Random forest, 100 trees, depth 10 | 24.5 | 24.8 |
+
+Distance models (k-NN, RBF SVM) and gradient models (logistic regression, a
+neural net) get the scaler. A forest splits on thresholds, so a monotone
+rescaling of a column barely moves it. A high-degree linear model can get
+*worse* if the scaler is applied to the expanded columns and flattens the
+polynomial structure. I try the scaler, I record both scores, and I keep it
+only when validation improves.
+
+`StandardScaler` is the default I reach for. `MinMaxScaler` when I want a
+bounded range. `QuantileTransformer` when a histogram is badly skewed.
+
+### Expansion
+
+`PolynomialFeatures` builds the products that let a linear model bend.
+Week 3 mapped the projectile features before logistic regression. Week 4 put
+degree 2 and a `StandardScaler` in front of an SVR. Week 6 used degree 8 in
+front of linear regression, and degree 3 on the concrete data.
+
+The step order that matched the homework pipelines:
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.linear_model import Ridge
+
+Pipeline([
+    ("expand", PolynomialFeatures(degree=3, include_bias=False)),
+    ("scale", StandardScaler()),
+    ("model", Ridge(alpha=1.0)),
+])
+```
+
+`Ridge` is scikit-learn's form of the week 2 regularized least squares,
+$w = (X^\top X + \lambda I)^{-1} X^\top y$, with `alpha` as $\lambda$. A high
+degree with $\lambda = 0$ oscillated on the week 2 data; the $L_2$ term pulled
+the weights down and smoothed the fit. For logistic regression and `SVC`, the
+homework's knob is $C$, and the course relation is $\lambda = 1/C$.
+
+### Dimensionality reduction
+
+PCA builds an orthogonal map. Fit it on the training rows (after scaling, when
+the columns have different units), choose the dimension from the cumulative
+explained variance, and check the result by reconstructing.
+
+On the 64×64 signed-distance fields (4096 columns, 8 classes):
+
+- 9 components explained more than 90% of the *training* variance.
+- Reconstructing with all components is exact for a training row. A test row
+  can still miss detail, because its variance was not in the fit.
+- k-NN accuracy on the test set was 0.71 in 3-D, 0.90 in 10-D, and 0.93 in
+  50-D. The variance curve and the accuracy curve are both worth plotting;
+  90% variance was not the same operating point as the best classifier.
+
+```python
+import numpy as np
+from sklearn.decomposition import PCA
+
+pca = PCA().fit(X_train_scaled)
+cumulative = np.cumsum(pca.explained_variance_ratio_)
+n_for_90 = int(np.searchsorted(cumulative, 0.9) + 1)
+```
+
+In the pipeline, `PCA(n_components=n_for_90)` is just another step. A later
+sample is mapped with `transform`.
+
+t-SNE is the picture of points I already have (`TSNE(n_components=2, perplexity=30)`
+in the homework, after a 50-D PCA). It has no `transform` for a row that was
+absent from the fit. The homework embedded the full SDF table and then split,
+so the k-NN accuracy on that embedding describes the picture, and it is the
+wrong number to quote for a part that arrives next month. I use t-SNE to see
+whether the classes separate. I use PCA when the reduced coordinates have to
+be computed for a new row.
+
+### Different transforms on different columns
+
+`ColumnTransformer` is the week 6 pattern for a table whose columns want
+different treatment. Columns left out of the list pass through.
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import QuantileTransformer
+
+preprocess = ColumnTransformer(
+    transformers=[
+        ("standard", StandardScaler(), [0, 3, 6, 7, 8]),
+        ("quantile", QuantileTransformer(n_quantiles=10), [1, 2, 5, 9]),
+    ],
+    remainder="passthrough",
+)
+```
+
+A transform I write myself goes in as a `FunctionTransformer`, which is how
+week 6 chained a hand-written step with an SVR. It has to be a pure function
+of the rows it is given, because the pipeline will call it on each fold.
+
+## 4. Models I actually compare
+
+I put several of these in one search and let the validation score choose. The
+defaults below are the settings the homework started from, and they are
+starting points for the grid in the next section.
+
+| Family | Estimator | When it earned a place | Knobs the homework turned |
+|---|---|---|---|
+| Linear | `LinearRegression`, `Ridge`, `LogisticRegression` | First baseline, and the model behind polynomial expansion | Polynomial degree, `alpha` or `C` |
+| Support vector | `SVR`, `SVC` | Distance geometry matters and the table is not huge | `kernel` (`linear`, `rbf`), `C` |
+| Neighbors | `KNeighborsRegressor`, `KNeighborsClassifier` | A local baseline, including after PCA | `n_neighbors` |
+| Tree | `DecisionTreeRegressor`, `DecisionTreeClassifier` | A single tree, mostly as the unit inside a forest | `max_depth` |
+| Forest | `RandomForestRegressor`, `RandomForestClassifier` | The tabular default in this course | `n_estimators`, `max_depth` |
+| Boosting | `XGBRegressor` | The stress field, after forests and stacking | `eta` (learning rate), `max_depth`, `n_estimators` |
+| Neural net | `MLPRegressor` for a quick try; PyTorch when I need the training curve | The target is a smooth function of a few inputs, or an image | Depth, width, epochs, learning rate. Standardize first. |
+
+For a PyTorch net, the week 10 shape is a useful small-regression starting
+point: fully connected, widths `[64, 128, 128, 64]`, `tanh` on the hidden
+layers, no activation on a regression output, `Adam` at learning rate `0.01`,
+`MSELoss`. Classification uses a loss such as cross-entropy and reads accuracy
+off the predicted class. The architecture notes are in
+[neural networks](../neural-networks/index.qmd).
+
+## 5. One search over models and hyperparameters
+
+This is the week 10 pattern: one pipeline, a list of parameter grids, and
+`GridSearchCV` with shuffled 5-fold. Each dict in the list replaces the model
+step, so k-NN, SVR, and a forest are compared under the same splits. The
+search refits the winning pipeline on all of `X_train`.
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV, KFold, train_test_split
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+pipe = Pipeline([
+    ("scale", StandardScaler()),
+    ("model", KNeighborsRegressor()),
+])
+
+param_grid = [
+    {
+        "model": [KNeighborsRegressor()],
+        "model__n_neighbors": [3, 5, 7],
+    },
+    {
+        "model": [SVR()],
+        "model__kernel": ["linear", "rbf"],
+        "model__C": [0.1, 1, 10],
+    },
+    {
+        "model": [RandomForestRegressor(random_state=0)],
+        "model__n_estimators": [100, 200],
+        "model__max_depth": [5, 10],
+        "scale": ["passthrough"],  # a forest does not need the scaler
+    },
+]
+
+search = GridSearchCV(
+    pipe,
+    param_grid,
+    cv=KFold(n_splits=5, shuffle=True, random_state=0),
+    scoring="r2",
+)
+search.fit(X_train, y_train)
+
+print(search.best_params_)
+pred = search.best_estimator_.predict(X_test)
+print(mean_squared_error(y_test, pred))
+```
+
+`"scale": ["passthrough"]` turns that step into the identity for the forest
+only. For a classifier I switch the estimators to their `Classifier`
+counterparts and set `scoring="accuracy"`.
+
+`cv_results_` has the mean and standard deviation of the score on every
+setting. I look at both before I accept the winner. A setting that wins by a
+hair, with a large spread across folds, is a weak winner.
+
+Adding expansion or PCA is another step in `pipe`, with its own grid entries
+(`expand__degree`, `pca__n_components`). Anything I would otherwise fit on the
+whole training matrix before calling `fit` belongs in that list, or the folds
+share information.
+
+## 6. K-fold when the model is a training loop
+
+`GridSearchCV` fits anything with `fit` and `predict`. A PyTorch loop needs
+the fold indices explicitly. Week 10 used two nested splits:
+
+- The outer `KFold` holds out 20% as the fold's test set.
+- Inside the other 80%, `train_test_split(..., test_size=0.25)` holds out a
+  quarter of *that* block for the validation curve. A quarter of 80% is 20%
+  of the original table, so each fit sees about 60% train, 20% validation,
+  20% test.
+
+A new network is constructed inside the training function. Reusing one module
+object across folds keeps the previous fold's weights.
+
+```python
+import numpy as np
+import torch
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
+
+folds = KFold(n_splits=5, shuffle=True, random_state=0)
+epoch_grid = [100, 500, 2000]
+mse = {n: [] for n in epoch_grid}
+
+for train_idx, test_idx in folds.split(X):
+    for n_epoch in epoch_grid:
+        model, train_curve, val_curve = train_model(
+            X[train_idx], y[train_idx], n_epoch
+        )
+        pred = model(torch.as_tensor(X[test_idx], dtype=torch.float32))
+        mse[n_epoch].append(
+            mean_squared_error(y[test_idx], pred.detach().numpy())
+        )
+
+for n_epoch, scores in mse.items():
+    print(n_epoch, float(np.mean(scores)), float(np.std(scores)))
+```
+
+I plot `train_curve` and `val_curve` on the same axes for every fold. The fold
+whose validation loss turns up while training loss keeps falling is the one
+that memorized. The number I compare across epoch counts is the mean of the
+fold test MSEs, not the best single fold.
+
+## 7. Ensembles, after a single model has a score
+
+An ensemble is another row in the comparison, judged by the same validation
+metric. I add one when a tuned single model has stopped moving.
+
+**Bagging.** Several copies of one estimator, each fit on a bootstrap sample,
+then averaged (regression) or voted (classification). Week 13 on
+`make_moons`: one decision tree averaged 0.930 across 5 folds. Bagging that
+tree scored 0.927, 0.943, 0.930, 0.953, 0.950, 0.943 at 1, 10, 20, 50, 100,
+and 200 estimators. Fifty trees won, and adding more did not keep helping.
+`RandomForestClassifier` is this idea with extra randomness in the splits,
+which is why it beat the single tree by so much on cylinder bands.
+
+```python
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+BaggingClassifier(
+    estimator=DecisionTreeClassifier(random_state=0),
+    n_estimators=50,
+    random_state=0,
+)
+```
+
+**Boosting.** Week 13 fit `XGBRegressor(objective="reg:squarederror", n_estimators=10)`
+on the same nodal-stress features and swept `eta` and `max_depth`. Shallow
+trees underfit (test MSE $1.3 \times 10^{-2}$ at `eta=0.1`, depth 5). The
+deep, aggressive end memorized (training MSE $7.4 \times 10^{-6}$ at
+`eta=0.7`, depth 20) and gave a worse test score than the middle of the grid.
+I treat `eta`, `max_depth`, and `n_estimators` as grid parameters and pick
+them by validation MSE.
+
+**Stacking.** Several different fitted models, then a second model that takes
+their predictions as input. Week 13 stacked a linear regression with trees of
+depth 12, 16, and 20, and used another linear regression as the final
+estimator. Test MSE was $9.8 \times 10^{-3}$ (linear), $8.3 \times 10^{-3}$,
+$8.1 \times 10^{-3}$, $8.5 \times 10^{-3}$ (the three trees), and
+$6.0 \times 10^{-3}$ for the stack. The stack's training MSE
+($2.4 \times 10^{-3}$) was *higher* than the deepest trees. Its test MSE was
+the lowest of the group. That is the outcome I want from stacking: a better
+held-out score, from a model that is less glued to the training rows.
+
+```python
+from sklearn.ensemble import StackingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+StackingRegressor(
+    estimators=[
+        ("linear", LinearRegression()),
+        ("tree_12", DecisionTreeRegressor(max_depth=12, random_state=0)),
+        ("tree_16", DecisionTreeRegressor(max_depth=16, random_state=0)),
+        ("tree_20", DecisionTreeRegressor(max_depth=20, random_state=0)),
+    ],
+    final_estimator=LinearRegression(),
+)
+```
+
+`StackingRegressor` cross-validates the base models internally when it builds
+the final estimator's inputs. I still wrap the whole object in the outer
+k-fold of section 5 if I am comparing it with a forest or an XGBoost model.
+Otherwise the stack's score and the forest's score come from different splits.
+
+## 8. Pictures, before I trust the number
+
+The score says how far off I am. The picture says whether the errors are in a
+place I care about.
+
+| Picture | What I look for |
+|---|---|
+| Histogram per training column | Skew, a column that is almost constant, units that differ by powers of ten |
+| Prediction and ground truth on the same color scale | A stress field, a scatter of predicted vs. true, a 1-D fit drawn through the points |
+| `DecisionBoundaryDisplay` | Where a classifier cuts, next to the training points |
+| Training and validation loss vs. epoch | Validation rising while training falls |
+| Fold scores side by side | One fold carrying the average |
+| Confusion matrix | Which classes are exchanged |
+| PCA variance bars, and a reconstruction | How many components the signal actually needs |
+| t-SNE colored by class | Whether the classes form groups I can see |
+
+For a field on a mesh, week 6 and week 13 plotted ground truth and prediction
+as two panels with the color limits taken from the ground truth. Sharing the
+limits is what makes a small error look small.
+
+## 9. When there is no label
+
+DBSCAN groups points by density. The homework clustered melt-pool image
+coordinates with `DBSCAN(eps=..., min_samples=...)` and judged the result by
+the picture: one image wanted `eps=7`, `min_samples=4`; the other wanted
+`eps=2`, `min_samples=2`. Those two numbers are the whole model. I sweep them
+and keep the clustering whose groups match the structure I can see, and I
+expect to retune them when the spacing of a new image changes.
+
+## Where each piece was practiced
+
+| Week | What I would reopen it for |
+|---|---|
+| 1 | Gradient descent by hand; weighted k-NN |
+| 2 | Polynomial least squares and the $L_2$ term |
+| 3 | Logistic regression, feature maps, $C = 1/\lambda$ |
+| 4 | Soft-margin SVM, kernels, a polynomial-then-scaler pipeline |
+| 5 | One tree against a random forest, train accuracy vs. test accuracy |
+| 6 | Min–max, standard, and quantile scaling; pipelines; Pearson filtering; `RFE`; `ColumnTransformer` |
+| 7–9 | PyTorch training loops; standardizing inputs so the loss converges; confusion matrices |
+| 10 | 5-fold for a network, with a validation curve inside each fold; `GridSearchCV` across model families |
+| 11 | DBSCAN |
+| 12 | PCA variance, reconstruction, k-NN in the reduced space; t-SNE as a picture |
+| 13 | Bagging, stacking, and an XGBoost `eta` / `max_depth` sweep |
+
+## A short checklist
+
+I copy this to the top of a new notebook and fill it in.
+
+1. Write down the target, the metric, and what a bad error costs.
+2. `train_test_split(..., test_size=0.2, random_state=0)`. Plot the training columns.
+3. Drop redundant training columns. Note the indices; apply the same drop to the test columns.
+4. Build a pipeline: scale (and expand or PCA, if I have a reason), then the model.
+5. `GridSearchCV` on the training set, 5 shuffled folds, several families in one `param_grid`.
+6. Read mean and spread of the fold scores. Plot errors, not just the scalar.
+7. If a single model has stalled, add a forest, a boosted model, or a stack, and compare it in the same search.
+8. Refit on all training rows (the search does this for the winner). Score the test set once. Save the fitted pipeline so a new row goes through the same steps.
