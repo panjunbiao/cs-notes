@@ -24,6 +24,9 @@ library) and to keep a searchable refresher for my future self.
   loop I want to reuse: feature scaling and expansion, pipelines, k-fold
   comparison of models and hyperparameters, ensembles, and the plots that go
   with the score.
+- [Lecture Concepts](notes/lecture-concepts/index.qmd) — a reminder of the
+  ideas in each 24-887 lecture, async and sync, so I can find them in the
+  slides.
 - [Logistic Regression](notes/logistic-regression/index.qmd) — binary, multi-class,
   and non-linear classification, starting from deriving gradient descent by hand.
 - [Support Vector Machine](notes/support-vector-machine/index.qmd) — max-margin

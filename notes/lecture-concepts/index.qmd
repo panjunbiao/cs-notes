@@ -1,0 +1,453 @@
+---
+title: "Lecture Concepts"
+subtitle: "A reminder of what each 24-887 lecture covered, so I can find it in the slides"
+date: 2026-11-27
+categories: [machine learning, 24-887, concepts]
+---
+
+::: {.callout-note appearance="simple"}
+This is an index, not a second copy of the lectures. Each week below names the
+ideas from the async deck, then what the sync hour added. The worked examples
+and the how-to loop live in the
+[machine learning workflow](../ml-workflow/index.qmd),
+[logistic regression](../logistic-regression/index.qmd),
+[support vector machines](../support-vector-machine/index.qmd), and
+[neural networks](../neural-networks/index.qmd) notes.
+
+Week 7, Lecture 1 has a sync deck only in the downloaded set. That sync hour
+is the review of the missing async lecture, so its ideas are listed there.
+Week 14 is a single lecture.
+:::
+
+## Where to look
+
+| I am trying to remember | Week |
+|---|---|
+| Supervised vs. unsupervised, classification vs. regression, norms, MSE, MAE | 1 |
+| Least squares, design matrix, gradient descent variants, $L_2$ | 2 |
+| Logistic regression, sigmoid, one-vs-one, one-vs-all, softmax, cross-entropy | 3 |
+| Max margin, support vectors, soft margin, kernels, SVR | 4 |
+| Decision trees, Gini, bagging, random forests | 5 |
+| Scaling, transforms, correlation filters, VIF, RFE | 6 |
+| Perceptron, forward pass, activations, vanishing gradients | 7 |
+| Backprop, learning curves, PyTorch training loop | 8 |
+| MAE, MSE, Huber, MAPE, $R^2$, confusion matrix, precision, recall, F1 | 9 |
+| Bias–variance, train / validation / test, k-fold | 10 |
+| k-means, hierarchical clustering, spectral clustering, GMM, DBSCAN | 11 |
+| PCA, eigenfaces, t-SNE, other nonlinear embeddings | 12 |
+| Bagging, stacking, gradient boosting, XGBoost | 13 |
+| CNN, RNN, attention, transformers, VAE, GAN, diffusion, GNN | 14 |
+
+## Week 1 — What kind of problem, and how wrong is the fit
+
+### Lecture 1 — Ontology and error
+
+**Async.** Where AIML shows up in engineering (digital twins, activity
+classification, segmentation). The family tree: supervised, unsupervised,
+self-supervised, reinforcement; under those, classification, regression,
+clustering, dimensionality reduction, and names the course only points at
+(active learning, transfer learning, contrastive learning, semi-supervised
+learning, physics-informed nets, GANs, policy learning, actor-critic). The
+supervised goal is a function from features to a label. Vector norms. Error
+as MSE and as MAE, and why the choice of error changes what "close" means.
+
+**Sync.** Course shape (async lecture, then sync hour, then homework). A
+second pass on the ontology, the playground network, the norms, and MSE
+versus MAE.
+
+### Lecture 2 — Gradient descent and nearest neighbors
+
+**Async.** Gradient descent: step against the gradient, and what changes when
+the function is no longer a function of one scalar. k-NN classification: the
+label is a vote of the $k$ nearest training points. k-NN regression: the
+prediction is an average of those neighbors. Distance, the choice of $k$, and
+the cost of keeping the whole training set.
+
+**Sync.** Reproducibility (a random seed). Ground truth versus a noisy
+sample, and the normal curve as the picture of that noise. A linear
+regression picture before week 2. Gradient descent uses only first-derivative
+information.
+
+## Week 2 — Linear least squares
+
+### Lecture 1 — The closed form
+
+**Async.** Nomenclature: features, parameters, prediction, residual. The
+approach: pick a model (a line, or a polynomial), stack every sample into a
+design matrix, write the squared-error objective, and solve. The normal
+equations. A trained model is the parameter vector. Model bias: a form that
+cannot express the data, no matter the parameters. Least squares with two
+input features.
+
+**Sync.** A linear *function* and linear *regression* are different claims.
+Walking a cubic model all the way to $Xw \approx y$, and the tall-skinny
+shape of $X$. Same training steps for a different basis. Choosing complexity.
+NumPy arrays, vectors, matrices, and broadcasting.
+
+### Lecture 2 — Iterative solvers and regularization
+
+**Async.** Gradient descent on the least-squares loss, for when the closed
+form is a bad idea. Full-batch gradient descent, stochastic gradient descent,
+and mini-batch. $L_2$ regularization: penalize large weights so a high-order
+fit stays smooth. Other penalties exist; $L_2$ is the one derived here.
+
+**Sync.** Why the closed form breaks (cost, conditioning). Least squares is
+convex, so gradient descent is chasing a global minimum. Feature scale
+changes the path the steps take. A side-by-side of the three gradient
+methods. Complexity wins an unregularized fit and then fails on new points.
+Which solver to reach for.
+
+## Week 3 — Logistic regression
+
+Hand derivation: [logistic regression](../logistic-regression/index.qmd).
+
+### Lecture 1 — Binary
+
+**Async.** Least squares is a poor classifier: the target is a category, and
+a line unbounded in $y$ is hard to tame. The sigmoid squashes the linear
+score into $(0, 1)$. A linear score gives a linear decision boundary;
+expanded features bend it. Training is maximum likelihood, which becomes a
+loss to descend. $L_2$ again, through the parameter $C$. Predicting is a
+threshold on the probability.
+
+**Sync.** The probability reading of the sigmoid. Who-ate-the-pie as the
+likelihood story. The train step and the predict step written as a pair.
+A coding pass, and a short side trip through a multivariate Gaussian.
+
+### Lecture 2 — More than two classes
+
+**Async.** One-versus-one: a binary model for every pair, then a vote.
+Multinomial logistic regression: one weight vector per class. One-hot
+labels. Cross-entropy, and the batch version; it is zero when the predicted
+distribution matches the label. Softmax turns the class scores into a
+distribution. Odds ratios.
+
+**Sync.** One-versus-all (one-versus-rest) beside one-versus-one, and what
+each is approximating. Odds for one class, then the full distribution.
+Training and prediction for the multinomial model.
+
+## Week 4 — Support vector machines
+
+Hand derivation: [support vector machines](../support-vector-machine/index.qmd).
+
+### Lecture 1 — Max margin, then a soft margin
+
+**Async.** A linear discriminant, and why the large-margin one is the one to
+keep. The margin as a constrained quadratic program. Support vectors are the
+training points that sit on the margin and determine the boundary. The dual,
+via Lagrange multipliers, is how those points are found. A soft margin lets
+some points cross, with a penalty.
+
+**Sync.** Hard-margin training restated as quadratic programming in standard
+form. The Lagrangian and the dual, with the Mario Kart picture for staying
+inside the constraints. What the trained machine stores. Notes on using the
+result.
+
+### Lecture 2 — Kernels, several classes, regression
+
+**Async.** A feature map makes a nonlinear boundary linear in a new space.
+The kernel trick evaluates inner products there without building the map.
+The same quadratic program, with the kernel in place. Multi-class SVM by
+reducing to binary problems. Support vector regression.
+
+**Sync.** Hard margin fails when the classes overlap; slack variables and $C$.
+A 1-D example that separates only after the features grow. Mercer's
+condition: which functions are legal kernels. The sklearn set: linear,
+polynomial, RBF, sigmoid. RBF corresponds to an infinite polynomial feature
+map with decaying weights. How a kernel model is evaluated on a new point.
+$\varepsilon$-insensitive loss: SVR ignores errors inside a tube, then pays
+for the rest. Soft-margin SVR.
+
+## Week 5 — Decision trees and forests
+
+### Lecture 1 — Classification trees
+
+**Async.** A tree is a stack of binary questions. Features may be numeric or
+categorical, and some values may be missing. Gini impurity measures how mixed
+a node is; the split that most reduces it is the one taken. Top-down
+induction. Continuous features are split at a threshold. Deeper trees cut the
+space into smaller boxes. Reading a leaf to predict. Hyperparameters that
+limit depth. Feature expansion still applies in front of a tree.
+
+**Sync.** Gini of a candidate split, worked on a small table. The same depth
+story. Regularizing with those hyperparameters. White box versus black box:
+a tree can be read. How a missing value can still be routed.
+
+### Lecture 2 — Regression trees, bagging, random forests
+
+**Async.** A regression tree predicts a constant on each leaf; the split
+minimizes a squared-error cost. Shallow versus deep, and what happens out of
+the range of the training values. Bootstrap aggregation: many trees on
+bootstrap samples, then average. A random forest also randomizes which
+features each split may see. Comparison with one tree.
+
+**Sync.** The regression cost, and pictures of a shallow tree, a deep tree,
+and two out-of-sample cases. Ensemble learning as a crowd of weak, diverse
+trees. Bootstrap sampling drawn out on a smaller example. The forest as
+bagging plus feature randomness.
+
+## Week 6 — Feature engineering
+
+### Lecture 1 — Scaling and transforms
+
+**Async.** Columns on different scales (the California housing example:
+income versus occupancy) distort distance and the size of a gradient step.
+Min–max normalization. Standardization to zero mean and unit variance. Log
+transform. Power transforms: Box–Cox and Yeo–Johnson. Quantile transform
+toward a uniform or a normal distribution. Fit the transform on the training
+rows, then apply that same map to anything new.
+
+**Sync.** Why scale shows up in distance, in which feature dominates a linear
+model, and in training. The same gallery of scalers, with the nonlinear ones
+separated from min–max and standard. A coding pass.
+
+### Lecture 2 — Which columns to keep
+
+**Async.** Filter methods score a column without training the final model.
+Pearson correlation: drop one of two features that move together, keeping
+the one more tied to the target. Variance inflation factor: how well a
+feature is already a linear combination of the others, via $R^2$. Wrapper
+methods train a model inside the search. Recursive feature elimination drops
+the weakest column and refits. Feature importance after a fit. Feature
+expansion is the opposite move: add columns. Selection and dimensionality
+reduction answer different questions.
+
+**Sync.** A second pass on the Pearson procedure and on VIF, then wrappers
+and RFE. The selection-versus-reduction note is the one to reread before
+week 12.
+
+## Week 7 — Neural networks, the forward picture
+
+Deeper notes: [neural networks](../neural-networks/index.qmd).
+
+### Lecture 1 — From a perceptron to a stack of layers
+
+**Sync** (the async deck is not in the downloaded set; this hour reviews it).
+Why a network: a perceptron is a weighted sum plus a threshold, and one
+perceptron cannot solve problems that are not linearly separable. A network
+is perceptrons in series and in parallel. Forward propagation. The same pass
+as a product of weight matrices. Softmax on a classification head. Learning
+is still "change weights to reduce a loss," now with a forward and a backward
+pass. Bias terms, and counting trainable parameters.
+
+### Lecture 2 — Activation functions
+
+**Async.** A node applies a nonlinearity; without it, a stack of layers is
+still one linear map. Sigmoid, and the steepness that approaches a step.
+Tanh. The identity. Softmax, as a distribution over classes rather than a
+hidden-unit activation. ReLU and leaky ReLU. Vanishing gradients: a
+saturated sigmoid or tanh sends almost no signal backward. A comparison
+table of advantages and failure modes.
+
+**Sync.** The same functions, plus ELU and GELU. How to choose: hidden units
+versus the output unit, regression versus classification. A forward-pass
+coding example.
+
+## Week 8 — Training a network
+
+### Lecture 1 — Backpropagation
+
+**Async.** The loss depends on a weight through every layer above it.
+Backpropagation is the chain rule organized from the output backward: one
+layer, then several, first with scalars and no bias. The training summary:
+forward, loss, backward, step. Learning curves. Underfitting versus
+overfitting as shapes of those curves. Batch, iteration, and epoch.
+Learning rate, momentum, and Adam. Regularization.
+
+**Sync.** Why the gradient is the expensive object, and what else has to be
+known to say how a parameter moves the loss. The delta rule. The same
+training summary, then notes on the practical knobs.
+
+### Lecture 2 — PyTorch
+
+**Async.** Tensors as NumPy with a device and a gradient. `torch.nn.Module`
+and a small `Sequential` net. A regression head versus a classification head.
+An optimizer, the training loop (zero the grads, forward, loss, backward,
+step), a learning-rate scheduler, the loss curve, and a validation pass
+inside training. `Dataset` and `DataLoader` for batched data.
+
+**Sync.** Stochastic, full-batch, and mini-batch updates again, now on the
+network loss surface. Iteration versus epoch. Learning rate, momentum, Adam.
+Underfit, overfit, regularization. Then the same PyTorch objects as the
+async deck.
+
+## Week 9 — Metrics
+
+### Lecture 1 — Regression
+
+**Async.** MAE ($L_1$), MSE ($L_2$), Huber (quadratic near zero, linear in
+the tails), MAPE (error as a fraction of the true value). $R^2$ as the
+fraction of variance the model captures, adjusted $R^2$ so extra features
+do not inflate it, and a plot of predicted versus true. $R^2$ is not the
+Pearson correlation: correlation ignores slope and intercept. sklearn's
+metric functions.
+
+**Sync.** A metric itself has a bias; the model will chase whatever is
+written down. The same list, with the "is this model good?" check next to
+MSE, and the correlation-versus-$R^2$ distinction drawn out. Adjusted $R^2$
+uses the feature count, not counting the bias term.
+
+### Lecture 2 — Classification
+
+**Async.** The confusion matrix: true positive, false positive, true
+negative, false negative. Accuracy, and why a skewed class makes it look
+kind. Precision (of the predicted positives, how many are real). Recall (of
+the real positives, how many were found). F1 as the balance of those two.
+ROC and AUC are flagged as further reading. The same matrix for more than
+two classes; a good model is dark on the diagonal. sklearn's display.
+
+**Sync.** The four cells told as engineering cases (a miss and a false alarm
+cost different things). Precision alone and recall alone each hide a
+failure. A worked F1 example. Multi-class matrices again.
+
+## Week 10 — Bias, variance, and honest evaluation
+
+The working version of the splits is in the
+[workflow](../ml-workflow/index.qmd).
+
+### Lecture 1 — Bias–variance
+
+**Async.** Bias: the model class cannot represent the target (high bias
+looks underfit and stable). Variance: the fit swings when the training
+sample changes (high variance looks overfit). The tradeoff as model
+complexity grows. How to recognize each from training versus held-out
+behavior.
+
+**Sync.** Mean and variance as moments of a density, so the names match the
+statistics. Three sources of error: bias, variance, and noise in the
+response. The same inputs can give different outputs. Performance moves when
+the sample moves. Detecting high variance and high bias in practice.
+
+### Lecture 2 — Model selection
+
+**Async.** Hold out a test set for a last estimate. Inside the rest, a
+validation set for choices: depth, learning rate, regularization weight,
+which features, how many layers. The simple approach is one split. The
+rigorous approach is k-fold: every training point takes a turn being the
+held-out fold, and the score is the average. Use that average to select.
+sklearn estimators share `fit` / `predict`, which is why one loop can try
+many models.
+
+**Sync.** The simple split drawn as train / validation / test. K-fold on a
+classifier, on a regressor, for selection, and for a final assessment. When
+k-fold is worth the cost. A boxplot of fold scores.
+
+## Week 11 — Unsupervised learning and clustering
+
+### Lecture 1 — k-means and hierarchical clustering
+
+**Async.** Unsupervised: there is no label to match. Clustering asks how
+many groups, and what counts as a group. There is no single best algorithm;
+scale the features first or the units choose the clusters. k-means: assign
+to the nearest center, recompute centers, repeat. Initialization matters.
+Hierarchical clustering builds a tree of merges; a dendrogram is the
+picture; a cut of the tree is a flat clustering.
+
+**Sync.** Centroid methods versus others. k-means factors, including the
+shape of the cloud it assumes. Linkage: single (closest pair of members),
+complete (farthest pair), average (centroids). The curse of dimensionality
+as distances get less informative.
+
+### Lecture 2 — How many clusters, and other algorithms
+
+**Async.** Inertia, and the elbow: more clusters always lower it, so the
+bend is the candidate. Silhouette: how well a point sits in its cluster
+versus the next one. Spectral clustering: a graph of the points, then
+clusters in a space of eigenvectors, which can follow non-convex shapes.
+Gaussian mixture models: each cluster is a Gaussian, and a point has a
+soft membership. DBSCAN: dense regions separated by sparse ones; `eps` and
+`min_samples`. A comparison figure of the sklearn clusterers on the same
+shapes.
+
+**Sync.** Inertia as the k-means objective, and why chasing the smallest
+inertia just grows $k$. The elbow and the silhouette drawn again. Spectral
+clustering told through vibration modes: the graph, its spectrum, clustering
+in that spectrum. GMM with too many components versus a coarser fit. DBSCAN's
+density rule.
+
+## Week 12 — Dimensionality reduction
+
+### Lecture 1 — PCA
+
+**Async.** A smaller set of coordinates that still carries the spread.
+PCA: orthogonal directions from the covariance, ordered by variance.
+Center the data (the mean vector). Encoding is projection onto those
+directions. Decoding with every component is lossless for the training span;
+keeping a prefix is a lossy reconstruction. How many components: cumulative
+explained variance. The recipe, and sklearn's `PCA`.
+
+**Sync.** One coordinate for a 2-D cloud, as the motivation. Covariance as
+the object that holds spread and correlation. Principal axes on examples,
+including a 3-D and a 5-D case. Encoding and decoding as a shift plus a
+rotation. Lossy reconstruction again.
+
+### Lecture 2 — Many more features than samples, and nonlinear maps
+
+**Async.** When the dimension exceeds the number of samples, the covariance
+is rank deficient; the recipe changes, and at most $n$ components are real.
+Eigenfaces: the mean face, the principal faces, a 2-D projection, and
+reconstructions as more components return. PCA from scratch and through
+sklearn, including on a signed-distance-field set. Linear maps versus
+nonlinear ones: locally linear embedding, Isomap, autoencoders. t-SNE for a
+2-D or 3-D picture of a high-dimensional set; perplexity is the neighborhood
+size. t-SNE is a visualization method.
+
+**Sync.** The rank-deficient case and the eigenface sequence again, with the
+projection drawn in more steps. The same nonlinear gallery and the same
+perplexity note.
+
+## Week 13 — Ensembles
+
+### Lecture 1 — Bagging and stacking
+
+**Async.** Bootstrapping is sampling with replacement. Bagging averages
+models trained on those samples (or votes, for labels). A random forest is
+bagging plus a random subset of features at each split. sklearn bagging for
+regression and for classification. Stacking: the base models' predictions
+become the features of a second model.
+
+**Sync.** An ensemble wants weak learners that are diverse and not bad;
+identical models do not average into anything new. Pasting is sampling
+without replacement, next to the bootstrap. Bagging versus stacking: one
+combines by a fixed vote, the other learns the combination.
+
+### Lecture 2 — Boosting
+
+**Async.** Boosting adds models in sequence, each one aimed at the residual
+of the ensemble so far. Gradient boosting: fit a tree to the negative
+gradient of the loss. Shrinkage is the learning rate on each new tree.
+sklearn's gradient boosting. XGBoost: a regularized objective, a greedy
+search for the next tree, and weights on the leaves.
+
+**Sync.** Gradient boosted regression trees, step by step, including the
+view that ignores $x$ and treats the prediction as the variable being
+updated. Shrinkage again. How XGBoost picks the next tree, and how that
+differs from plain gradient boosting.
+
+## Week 14 — Deep learning, as a map
+
+### Lecture 1 — Families, and the edge of the course
+
+**Async.** A survey, not a working treatment. Convolutional nets for images.
+Recurrent nets for sequences. Autoencoders and variational autoencoders.
+GANs. Graph neural nets. Attention. Diffusion models. Transformers and large
+language models.
+
+**Sync.** AI, machine learning, and deep learning as nested ideas, with the
+Samuel and Mitchell definitions. "Deep" is a moving word: more than two
+hidden layers once counted. Depth as another way to grow capacity, beside
+width. Inductive bias: the architecture should match the data. Convolution
+and learnable kernels; the Hubel and Wiesel picture for images. Recurrence
+for sequences. Attention as a weighted look at other positions, and
+transformers built on it. Graphs and message passing. Deep generative
+modeling: a VAE learns a distribution in a latent space; a GAN pits a
+generator against a discriminator; diffusion iteratively denoises.
+
+The sync hour also marks what this course only named or skipped, so I do not
+confuse a mention with a method I can apply: Gaussian processes, Bayesian
+optimization, active learning, Bayesian networks, Markov decision processes,
+uncertainty quantification, variational inference, reinforcement learning,
+model predictive control, causality, physics-informed nets and neural
+operators, normalizing flows and energy-based models, and language-model
+work beyond the transformer slide. The ontology slide in that hour is the
+one that separates "covered in detail" from "brief introduction."

@@ -11,7 +11,9 @@ the weekly coding homework in CMU **24-887 — Machine Learning & AI for
 Engineers**: each week taught one piece (a scaler, a model family, k-fold, PCA,
 an ensemble), and this page puts those pieces into one loop.
 
-The derivations live elsewhere: [logistic regression](../logistic-regression/index.qmd),
+A reminder of which lecture introduced each idea is on the
+[lecture concepts](../lecture-concepts/index.qmd) page. The derivations live
+elsewhere: [logistic regression](../logistic-regression/index.qmd),
 [support vector machines](../support-vector-machine/index.qmd), and
 [neural networks](../neural-networks/index.qmd). This page is the part I would
 open at work.
